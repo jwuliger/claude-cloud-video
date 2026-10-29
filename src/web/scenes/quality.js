@@ -38,9 +38,11 @@ export function buildQuality(ctx) {
       drawGpuGlyph(c, w - 66, 40);
     },
   });
-  const live = el('div', 'label strong', frame, COPY.quality.live);
+  const live = el('div', 'label', frame, COPY.quality.live);
+  live.style.color = PALETTE.text;
   place(live, { x: 66, y: 31 });
-  const gpu = el('div', 'label strong', frame, COPY.quality.gpu);
+  const gpu = el('div', 'label', frame, COPY.quality.gpu);
+  gpu.style.color = PALETTE.text;
   place(gpu, { x: FRAME.w - 150, y: 31 });
   riseIn(tl, frame, scene.start + SCENE_LEAD, { y: 28, duration: DURATION.long });
 
@@ -50,7 +52,8 @@ export function buildQuality(ctx) {
   row.style.justifyContent = 'center';
   row.style.columnGap = '18px';
   const chips = COPY.quality.chips.map((text, index) => {
-    const chip = el('div', 'chip strong', row, text);
+    const chip = el('div', 'chip', row, text);
+    chip.style.color = PALETTE.text;
     chip.style.position = 'relative';
     riseIn(tl, chip, cue(cues, claimCues[index] ?? 'quality.premium'), {
       y: 18,

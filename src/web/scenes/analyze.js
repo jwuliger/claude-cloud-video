@@ -6,9 +6,9 @@ import { mix } from '../../core/color.js';
 import { clamp01 } from '../../core/math.js';
 import { noise1 } from '../../core/noise.js';
 import { createRng } from '../../core/rng.js';
-import { maskedWord, place } from '../dom.js';
-import { line, polyline, roundedRect } from '../draw/primitives.js';
-import { EASE, exitTime, leave, maskIn, SCENE_LEAD } from '../motion.js';
+import { place, tagLabel } from '../dom.js';
+import { line, roundedRect } from '../draw/primitives.js';
+import { DURATION, EASE, exitTime, leave, riseIn, SCENE_LEAD } from '../motion.js';
 
 const LANE = { x: 400, w: 1400, h: 76, gap: 22, top: 168 };
 const BEAT_PITCH = 70;
@@ -94,13 +94,18 @@ export function buildAnalyze(ctx) {
     if (!state) {
       return;
     }
-    const { outer, inner } = maskedWord(root, lane.label, 'body strong nowrap');
-    place(outer, { x: 120, y: laneTop(index) + LANE.h / 2 - 17 });
-    maskIn(tl, inner, at);
+    const tag = tagLabel(root, String(index + 1).padStart(2, '0'), lane.label);
+    place(tag.node, { x: 120, y: laneTop(index) + LANE.h / 2 - 9 });
+    riseIn(tl, tag.node, at, { y: 10, duration: DURATION.base });
+    // The tag lights up as its signal is found, then settles back to the quiet tone.
+    tl.to(tag.text, { color: PALETTE.text, duration: 0.25 }, at);
+    tl.to(tag.text, { color: PALETTE.textMid, duration: 0.6 }, at + HOT_SECONDS);
+    tl.to(tag.index, { color: PALETTE.accent, duration: 0.25 }, at);
+    tl.to(tag.index, { color: PALETTE.textDim, duration: 0.6 }, at + HOT_SECONDS);
     tl.fromTo(state, { reveal: 0 }, { reveal: 1, duration: REVEAL_SECONDS, ease: EASE.out }, at);
     tl.fromTo(state, { hot: 0 }, { hot: 1, duration: 0.25, ease: EASE.out }, at);
     tl.to(state, { hot: 0, duration: 0.6, ease: EASE.inOut }, at + HOT_SECONDS);
-    leave(tl, outer, exitTime(scene));
+    leave(tl, tag.node, exitTime(scene));
   });
 
   const layer = layers.add({
@@ -124,8 +129,13 @@ function drawLanes(ctx, t, states, frame) {
   states.forEach((state, index) => {
     const top = laneTop(index);
     const progress = EASE.out(clamp01(frame.lines * 1.5 - index * 0.1));
-    line(ctx, LANE.x, top, LANE.x + LANE.w * progress, top, PALETTE.line, 1);
-    line(ctx, LANE.x, top + LANE.h, LANE.x + LANE.w * progress, top + LANE.h, PALETTE.line, 1);
+    // One hairline between neighbouring lanes, plus one closing the last lane.
+    const above = top - LANE.gap / 2;
+    line(ctx, LANE.x, above, LANE.x + LANE.w * progress, above, PALETTE.line, 1);
+    if (index === states.length - 1) {
+      const below = top + LANE.h + LANE.gap / 2;
+      line(ctx, LANE.x, below, LANE.x + LANE.w * progress, below, PALETTE.line, 1);
+    }
     if (state.reveal <= 0) {
       return;
     }
@@ -155,10 +165,30 @@ function stroke(ctx, color, width) {
   ctx.lineWidth = width;
 }
 
+/**
+ * Stroke a flat [x0, y0, x1, y1, ...] polyline in any CSS colour.
+ * @param {CanvasRenderingContext2D} ctx
+ * @param {readonly number[]} points
+ * @param {string} color
+ * @param {number} width
+ */
+function strokePolyline(ctx, points, color, width) {
+  ctx.beginPath();
+  for (let k = 0; k < points.length; k += 2) {
+    if (k === 0) {
+      ctx.moveTo(points[k] ?? 0, points[k + 1] ?? 0);
+    } else {
+      ctx.lineTo(points[k] ?? 0, points[k + 1] ?? 0);
+    }
+  }
+  stroke(ctx, color, width);
+  ctx.stroke();
+}
+
 /** Beat: a tick on every beat, taller on the downbeat. */
 function drawBeat(
   /** @type {CanvasRenderingContext2D} */ ctx,
-  /** @type {number} */ t,
+  /** @type {number} */ _t,
   /** @type {string} */ ink,
 ) {
   for (let i = 0; i * BEAT_PITCH <= LANE.w; i += 1) {
@@ -172,13 +202,12 @@ function drawBeat(
     ctx.stroke();
   }
   ctx.globalAlpha = 1;
-  void t;
 }
 
 /** Rhythm: one dot per sixteenth note, sized by how hard that step hits. */
 function drawRhythm(
   /** @type {CanvasRenderingContext2D} */ ctx,
-  /** @type {number} */ t,
+  /** @type {number} */ _t,
   /** @type {string} */ ink,
 ) {
   const pitch = BEAT_PITCH / 4;
@@ -191,7 +220,6 @@ function drawRhythm(
     ctx.fill();
   }
   ctx.globalAlpha = 1;
-  void t;
 }
 
 /** Lows: a slow swell that surges on every beat. */
@@ -218,14 +246,7 @@ function drawLows(
   ctx.globalAlpha = 0.16;
   ctx.fill();
   ctx.globalAlpha = 1;
-  polyline(ctx, points, PALETTE.text, 0, 0);
-  ctx.beginPath();
-  for (let k = 0; k < points.length; k += 2) {
-    if (k === 0) ctx.moveTo(points[k] ?? 0, points[k + 1] ?? 0);
-    else ctx.lineTo(points[k] ?? 0, points[k + 1] ?? 0);
-  }
-  stroke(ctx, ink, 2);
-  ctx.stroke();
+  strokePolyline(ctx, points, ink, 2);
 }
 
 /** Mids: dense vertical strokes that shimmer. */
@@ -248,12 +269,12 @@ function drawMids(
 /** Vocals: a melody contour in phrases, with a dot on every note. */
 function drawVocals(
   /** @type {CanvasRenderingContext2D} */ ctx,
-  /** @type {number} */ t,
+  /** @type {number} */ _t,
   /** @type {string} */ ink,
 ) {
   for (const phrase of SHAPES.phrases) {
     const points = phrase.flatMap((note) => [note.x, LANE.h - 12 - note.level * (LANE.h - 24)]);
-    polyline(ctx, points, ink, 1, 2);
+    strokePolyline(ctx, points, ink, 2);
     ctx.fillStyle = ink;
     phrase.forEach((note) => {
       ctx.beginPath();
@@ -261,13 +282,12 @@ function drawVocals(
       ctx.fill();
     });
   }
-  void t;
 }
 
 /** Instrumentals: sustained blocks in three rows. */
 function drawInstrumentals(
   /** @type {CanvasRenderingContext2D} */ ctx,
-  /** @type {number} */ t,
+  /** @type {number} */ _t,
   /** @type {string} */ ink,
 ) {
   ctx.fillStyle = ink;
@@ -277,7 +297,6 @@ function drawInstrumentals(
     ctx.fill();
   }
   ctx.globalAlpha = 1;
-  void t;
 }
 
 const DRAWERS = [drawBeat, drawRhythm, drawLows, drawMids, drawVocals, drawInstrumentals];

@@ -50,10 +50,20 @@ export const PALETTE = Object.freeze({
 export const TYPE = Object.freeze({
   family: 'Geist',
   file: '/assets/fonts/Geist-Variable.woff2',
-  weight: { light: 300, regular: 400, medium: 500, semibold: 600 },
+  weight: { light: 300, regular: 400, label: 450, medium: 500, semibold: 600 },
   /** Pixel sizes in the 1920x1080 layout. */
-  size: { display: 128, headline: 76, title: 44, body: 26, caption: 30, label: 16 },
-  tracking: { display: '-0.045em', headline: '-0.035em', label: '0.16em' },
+  size: {
+    display: 128,
+    headline: 76,
+    title: 44,
+    body: 26,
+    caption: 30,
+    label: 15,
+    tag: 15,
+    index: 12,
+    code: 25,
+  },
+  tracking: { display: '-0.045em', headline: '-0.035em', label: '0.18em', index: '0.12em' },
 });
 
 export const LAYOUT = Object.freeze({
@@ -467,6 +477,8 @@ export const COPY = Object.freeze({
     headline: 'Hand-written animation engines.',
     nodes: { song: 'Song', engine: 'Engine', video: 'Video' },
     rules: ['pulse = decay(beat)', 'y = noise(x, seed)', 'look = style(genre)'],
+    /** Names in the rules that come from the song or the seed; they are drawn in the accent. */
+    inputs: ['beat', 'seed', 'genre'],
     rejected: 'Generative AI video',
   },
   upload: {
@@ -516,7 +528,6 @@ export const COPY = Object.freeze({
   choose: {
     experience: {
       label: 'Experience',
-      items: ['Experience 01', 'Experience 02', 'Experience 03', 'Experience 04'],
       looks: ['contours', 'rings', 'bars', 'shards'],
     },
     backdrop: { label: 'Backdrop', items: ['Plain', 'Grid', 'Glow'] },

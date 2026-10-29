@@ -5,7 +5,7 @@ import { cue } from '../../core/cues.js';
 import { rgba } from '../../core/color.js';
 import { pulse } from '../../core/score.js';
 import { canvasCard } from '../components.js';
-import { el, place } from '../dom.js';
+import { el, place, tagLabel } from '../dom.js';
 import { drawLook } from '../draw/looks.js';
 import { line } from '../draw/primitives.js';
 import { DURATION, EASE, exitTime, leave, riseIn, SCENE_LEAD } from '../motion.js';
@@ -22,7 +22,16 @@ const GRID_STEP = 40;
  */
 function setActive(node, active) {
   node.style.borderColor = active ? PALETTE.accent : PALETTE.lineStrong;
-  node.style.color = active ? PALETTE.text : PALETTE.textDim;
+  labelOf(node).style.color = active ? PALETTE.text : PALETTE.textDim;
+}
+
+/**
+ * The element whose colour shows the selection: a tag's text, or the control itself.
+ * @param {HTMLElement} node
+ * @returns {HTMLElement}
+ */
+function labelOf(node) {
+  return node.querySelector('.txt') ?? node;
 }
 
 /**
@@ -35,16 +44,13 @@ function setActive(node, active) {
 function select(tl, nodes, active, at) {
   nodes.forEach((node, index) => {
     const on = index === active;
+    const ease = EASE.out;
     tl.to(
       node,
-      {
-        borderColor: on ? PALETTE.accent : PALETTE.lineStrong,
-        color: on ? PALETTE.text : PALETTE.textDim,
-        duration: 0.25,
-        ease: EASE.out,
-      },
+      { borderColor: on ? PALETTE.accent : PALETTE.lineStrong, duration: 0.25, ease },
       at,
     );
+    tl.to(labelOf(node), { color: on ? PALETTE.text : PALETTE.textDim, duration: 0.25, ease }, at);
   });
 }
 
@@ -85,15 +91,15 @@ export function buildChoose(ctx) {
     groupLabel(captions.label, 650),
   ];
 
-  const rows = experience.items.map((text, index) => {
-    const row = el('div', 'card', root, text);
+  const rows = experience.looks.map((_, index) => {
+    const row = el('div', 'card', root);
     place(row, { x: ROW.x, y: 156 + index * (ROW.h + ROW.gap), w: ROW.w, h: ROW.h });
     row.style.background = 'transparent';
     row.style.borderRadius = '12px';
     row.style.padding = '0 22px';
-    row.style.fontSize = '22px';
-    row.style.lineHeight = `${ROW.h - 2}px`;
-    row.style.fontWeight = String(TYPE.weight.medium);
+    row.style.display = 'flex';
+    row.style.alignItems = 'center';
+    tagLabel(row, String(index + 1).padStart(2, '0'), experience.looks[index] ?? experience.label);
     setActive(row, index === 0);
     return row;
   });

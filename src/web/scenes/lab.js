@@ -46,7 +46,7 @@ export function buildLab(ctx) {
   status.style.position = 'relative';
   status.style.width = '8px';
   status.style.height = '8px';
-  el('span', 'strong', badge, pill);
+  el('span', '', badge, pill).style.color = PALETTE.text;
   badge.style.borderColor = PALETTE.accent;
   riseIn(tl, badge, cue(cues, 'lab.subscription') + 0.35, { y: 14, duration: DURATION.base });
   tl.fromTo(

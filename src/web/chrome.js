@@ -17,15 +17,11 @@ export function buildChrome(tl, stage, cues) {
   const mark = el('div', 'dot', bar);
   place(mark, { x: LAYOUT.margin, y: LAYOUT.topBar + 4, w: 10, h: 10 });
   const name = el('div', 'label mid', bar, BRAND.name);
-  name.style.letterSpacing = '0.06em';
-  name.style.textTransform = 'none';
-  name.style.fontSize = '16px';
   place(name, { x: LAYOUT.margin + 24, y: LAYOUT.topBar });
 
   const domain = el('div', 'label', bar, BRAND.domain);
   domain.style.textTransform = 'none';
-  domain.style.letterSpacing = '0.06em';
-  domain.style.fontSize = '16px';
+  domain.style.letterSpacing = '0.08em';
   domain.style.textAlign = 'right';
   place(domain, { x: 1920 - LAYOUT.margin - 400, y: LAYOUT.topBar, w: 400 });
 

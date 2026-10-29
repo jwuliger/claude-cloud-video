@@ -8,20 +8,22 @@ import { line as strokeLine, roundedRect } from '../draw/primitives.js';
 import { DURATION, EASE, SCENE_LEAD, leave, maskIn, riseIn } from '../motion.js';
 import { rgba } from '../../core/color.js';
 
-const PANEL = { x: 120, y: 450, w: 1682, h: 380 };
-const BEAT_WIDTH = 112;
-const LINE_COUNT = 16;
+/** Labels sit in a left column; the grid starts to their right, as in the analysis scene. */
+const LABEL_X = 120;
+const PANEL = { x: 400, y: 450, w: 1402, h: 380 };
+const BEAT_WIDTH = 100;
+const LINE_COUNT = 15;
 const TICK_Y = 64;
 const CUT_Y = 190;
 const CUT_HEIGHT = 104;
 const CUT_RADIUS = 12;
 /** Clips as [start beat, length in beats, drift in pixels once the sync is lost]. */
 const CLIPS = [
-  [0.5, 2, -14],
-  [3.5, 2.5, 30],
-  [6.8, 1.5, -44],
-  [9, 3, 56],
-  [12.8, 2.2, -34],
+  [0.5, 2, -12],
+  [3.5, 2, 26],
+  [6.5, 1.5, -38],
+  [8.5, 2.5, 48],
+  [11.5, 2, -30],
 ];
 
 /**
@@ -40,12 +42,12 @@ export function buildProblem(ctx) {
   });
 
   const labels = [
-    [COPY.problem.beatLabel, PANEL.y + TICK_Y - 34],
-    [COPY.problem.cutsLabel, PANEL.y + CUT_Y - 34],
+    [COPY.problem.beatLabel, PANEL.y + TICK_Y - 9],
+    [COPY.problem.cutsLabel, PANEL.y + CUT_Y + CUT_HEIGHT / 2 - 9],
   ];
   const labelNodes = labels.map(([text, y]) => {
     const node = el('div', 'label', root, String(text));
-    return place(node, { x: PANEL.x, y: Number(y) });
+    return place(node, { x: LABEL_X, y: Number(y) });
   });
   riseIn(tl, labelNodes, scene.start + 0.25, { y: 10, stagger: 0.12, duration: DURATION.short });
   leave(tl, labelNodes, collapseAt - 0.2);

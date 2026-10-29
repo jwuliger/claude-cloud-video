@@ -4,7 +4,7 @@ import { COPY, PALETTE, VIDEO } from '../../config/video.config.js';
 import { cue } from '../../core/cues.js';
 import { clamp01, fract } from '../../core/math.js';
 import { pulse } from '../../core/score.js';
-import { el, maskedWord, place } from '../dom.js';
+import { codeLine, el, maskedContent, maskedWord, place } from '../dom.js';
 import { drawLook } from '../draw/looks.js';
 import { circle, disc, line } from '../draw/primitives.js';
 import { songBars } from '../draw/song.js';
@@ -19,6 +19,8 @@ const NODES = Object.freeze({
 });
 const LINK_Y = NODE_Y + NODE_HEIGHT / 2;
 const BAR_COUNT = 34;
+/** Space kept free at the top of a card for its label. */
+const LABEL_CLEARANCE = 52;
 
 /**
  * @param {import('../film.js').SceneContext} ctx
@@ -52,7 +54,8 @@ export function buildEngines(ctx) {
   const engine = cards['engine'];
   if (engine) {
     COPY.engines.rules.forEach((rule, index) => {
-      const { outer, inner } = maskedWord(engine, rule, 'body strong nowrap');
+      const { outer, inner } = maskedContent(engine);
+      codeLine(inner, rule, COPY.engines.inputs);
       place(outer, { x: 32, y: 92 + index * 56 });
       maskIn(tl, inner, rulesAt + index * 0.28);
     });
@@ -136,8 +139,9 @@ function addNodeVisuals(ctx, cards, scene) {
       end: scene.end,
       draw: (c, t) =>
         drawLook(c, 'contours', {
+          y: LABEL_CLEARANCE,
           w: NODES.video.w - 2,
-          h: NODE_HEIGHT - 2,
+          h: NODE_HEIGHT - 2 - LABEL_CLEARANCE,
           t,
           seed: VIDEO.seed,
           pulse: pulse(kicks, t, 0.25),

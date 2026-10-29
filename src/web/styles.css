@@ -75,14 +75,54 @@ canvas.abs {
   color: var(--text-mid);
 }
 
-.label {
-  z-index: 2;
+/* Small interface text: tracked capitals in a muted tone, never heavy or pure white. */
+.label,
+.tag,
+.chip {
   font-size: var(--size-label);
-  font-weight: var(--weight-medium);
+  font-weight: var(--weight-label);
   letter-spacing: var(--tracking-label);
   text-transform: uppercase;
-  color: var(--text-dim);
   white-space: nowrap;
+}
+
+.label {
+  z-index: 2;
+  color: var(--text-dim);
+}
+
+.tag {
+  display: inline-flex;
+  align-items: baseline;
+  column-gap: 16px;
+  font-size: var(--size-tag);
+  color: var(--text-mid);
+}
+
+.tag .idx {
+  font-size: var(--size-index);
+  letter-spacing: var(--tracking-index);
+  color: var(--text-dim);
+}
+
+.code {
+  font-size: var(--size-code);
+  font-weight: var(--weight-regular);
+  letter-spacing: 0;
+  white-space: nowrap;
+  color: var(--text-mid);
+}
+
+.code .op {
+  color: var(--text-dim);
+}
+
+.code .fn {
+  color: var(--text);
+}
+
+.code .input {
+  color: var(--accent);
 }
 
 .nowrap {
@@ -146,15 +186,19 @@ canvas.abs {
   box-sizing: border-box;
   display: flex;
   align-items: center;
-  gap: 10px;
-  height: 46px;
-  padding: 0 22px;
+  gap: 12px;
+  height: 40px;
+  padding: 0 20px;
   border: 1px solid var(--line-strong);
-  border-radius: 23px;
-  font-size: 19px;
-  font-weight: var(--weight-medium);
+  border-radius: 20px;
   color: var(--text-mid);
-  white-space: nowrap;
+}
+
+/* A chip holding literal text, such as a file name, keeps its own capitalisation. */
+.chip.plain {
+  font-size: 17px;
+  letter-spacing: 0.01em;
+  text-transform: none;
 }
 
 .captions {

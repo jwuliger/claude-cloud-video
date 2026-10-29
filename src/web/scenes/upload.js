@@ -9,7 +9,7 @@ import { songBars } from '../draw/song.js';
 import { DURATION, EASE, exitTime, leave, maskIn, riseIn, SCENE_LEAD } from '../motion.js';
 import { rgba } from '../../core/color.js';
 
-const ZONE = { x: 120, y: 360, w: 1680, h: 300 };
+const ZONE = { x: 120, y: 390, w: 1680, h: 300 };
 const BAR_COUNT = 150;
 const BAR_PADDING = 48;
 /** Where the file chip starts, relative to its resting place in the header. */
@@ -41,7 +41,7 @@ export function buildUpload(ctx) {
   riseIn(tl, panel, panelAt, { y: 0, duration: DURATION.short });
   tl.to([zone], { opacity: 0, duration: DURATION.short, ease: EASE.in }, panelAt);
 
-  const chip = el('div', 'chip', root);
+  const chip = el('div', 'chip plain', root);
   place(chip, { x: ZONE.x, y: HEADER_Y });
   const icon = el('span', 'dot', chip);
   icon.style.position = 'relative';

@@ -43,6 +43,7 @@ export default [
     settings: { jsdoc: { mode: 'typescript' } },
     rules: {
       ...strictRules,
+      'no-unused-vars': ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
       // Types are checked by tsc in strict mode, so JSDoc only has to describe them.
       'jsdoc/no-undefined-types': 'off',
       'jsdoc/require-jsdoc': 'off',
@@ -95,6 +96,11 @@ export default [
     // Command line tools talk to the user through the console.
     files: ['scripts/**/*.js'],
     rules: { 'no-console': 'off', 'max-lines-per-function': 'off' },
+  },
+  {
+    // The brief asks for all text, timing and colour in one config file, so its length is by design.
+    files: ['src/config/**/*.js'],
+    rules: { 'max-lines': 'off' },
   },
   {
     files: ['tests/**/*.js'],
