@@ -193,16 +193,184 @@ export const VOICEOVER = Object.freeze({
 });
 
 /**
- * Drum pattern sections on a 16-step bar grid. `from` and `to` are seconds on the timeline.
- * The soundtrack and the on-screen pulses both read the kick list, so they cannot drift apart.
- * @type {Readonly<Record<string, readonly {from: number, to: number, steps: readonly number[]}[]>>}
+ * @typedef {object} PatternSection
+ * @property {number} from Seconds, inclusive.
+ * @property {number} to Seconds, exclusive.
+ * @property {readonly number[]} steps Sixteenth-note steps (0-15) that sound within each bar.
+ */
+
+/**
+ * Drum patterns on a 16-step bar grid. The soundtrack and the on-screen pulses both read the
+ * kick list, so picture and sound cannot drift apart.
+ * @type {Readonly<Record<string, readonly PatternSection[]>>}
  */
 export const DRUMS = Object.freeze({
   kick: [
     { from: 1.5, to: 3, steps: [0, 4, 8, 12] },
     { from: 8, to: 56, steps: [0, 4, 8, 12] },
   ],
+  hat: [{ from: 12, to: 56, steps: [2, 6, 10, 14] }],
+  shaker: [{ from: 21.5, to: 56, steps: [1, 3, 5, 7, 9, 11, 13, 15] }],
+  clap: [{ from: 12, to: 56, steps: [4, 12] }],
 });
+
+/**
+ * Harmony and arrangement. 120 BPM, C major / A minor, four chords of one bar each.
+ */
+export const SCORE = Object.freeze({
+  loop: ['Am9', 'Fmaj7', 'Cmaj9', 'G69'],
+  /** Bar index to chord, for the final cadence into C. */
+  overrides: Object.freeze({ 28: 'Cmaj9' }),
+  voicings: Object.freeze({
+    Am9: {
+      root: 'A2',
+      pad: ['E3', 'G3', 'B3', 'C4', 'E4'],
+      arp: ['A3', 'C4', 'E4', 'G4', 'B4', 'E5'],
+      bell: ['B5', 'E6', 'C6'],
+    },
+    Fmaj7: {
+      root: 'F2',
+      pad: ['C3', 'E3', 'A3', 'C4', 'E4'],
+      arp: ['F3', 'A3', 'C4', 'E4', 'A4', 'C5'],
+      bell: ['A5', 'E6', 'C6'],
+    },
+    Cmaj9: {
+      root: 'C3',
+      pad: ['G3', 'B3', 'D4', 'E4', 'G4'],
+      arp: ['C4', 'E4', 'G4', 'B4', 'D5', 'G5'],
+      bell: ['D6', 'B5', 'G5'],
+    },
+    G69: {
+      root: 'G2',
+      pad: ['D3', 'A3', 'B3', 'D4', 'E4'],
+      arp: ['G3', 'B3', 'D4', 'E4', 'A4', 'D5'],
+      bell: ['E6', 'B5', 'D6'],
+    },
+  }),
+  /** Which layers play when. `drift` plays notes that slide off the grid, to match the problem scene. */
+  sections: [
+    { from: 0, to: 3, drone: 1, pad: 0.55, bass: 'none', arp: 'none', bells: false },
+    { from: 3, to: 8, drone: 1, pad: 0.4, bass: 'none', arp: 'drift', bells: false },
+    { from: 8, to: 17.5, drone: 0, pad: 0.8, bass: 'pulse', arp: 'eighth', bells: false },
+    { from: 17.5, to: 21.5, drone: 0, pad: 0.9, bass: 'long', arp: 'none', bells: true },
+    { from: 21.5, to: 27.5, drone: 0, pad: 0.8, bass: 'pulse', arp: 'sixteenth', bells: false },
+    { from: 27.5, to: 45.5, drone: 0, pad: 0.9, bass: 'pulse', arp: 'eighth', bells: true },
+    { from: 45.5, to: 52, drone: 0, pad: 1, bass: 'pulse', arp: 'sixteenth', bells: true },
+    { from: 52, to: 56, drone: 0, pad: 1, bass: 'long', arp: 'eighth', bells: true },
+    { from: 56, to: 58, drone: 0, pad: 1, bass: 'none', arp: 'none', bells: true },
+  ],
+  /** The problem scene's notes drift this late (seconds) by the time the beat is lost. */
+  driftSeconds: 0.14,
+  driftFrom: 3.5,
+  driftTo: 7,
+});
+
+/** Mix targets and mastering. Loudness values are LUFS, gains are dB. */
+export const AUDIO = Object.freeze({
+  sampleRate: 48000,
+  loudness: { voice: -19, music: -24, final: -15, truePeak: -1.5 },
+  /** Music drops by this many dB while the narrator speaks, and sound effects by half as much. */
+  duck: { depthDb: 7, attack: 0.05, release: 0.45 },
+  musicFadeOut: { from: 56.2, to: 58 },
+  voiceEq: { highpassHz: 90, presenceHz: 3200, presenceDb: 2.2, lowpassHz: 8200, sibilanceHz: 6800, sibilanceDb: -3 },
+  voiceRoom: { rt60: 0.9, wetDb: -23 },
+  musicReverb: { rt60: 3.1, damping: 0.4 },
+  delayTime: 0.375,
+});
+
+/**
+ * Sound effects. `at` is a cue name or seconds; `offset` is added to it. `gain` is dB below the
+ * sound's own peak. `scenes` plays the same effect at the start of each listed scene.
+ * @typedef {object} SfxEvent
+ * @property {string | number} [at]
+ * @property {readonly string[]} [scenes]
+ * @property {number} [offset]
+ * @property {string} sound
+ * @property {number} gain
+ * @property {string} [note]
+ * @property {number} [duration]
+ * @property {number} [pan]
+ * @property {'up' | 'down'} [direction]
+ * @property {readonly string[]} [notes]
+ */
+
+/** @type {readonly SfxEvent[]} */
+export const SFX = Object.freeze([
+  { at: 0, sound: 'swell', duration: 1.5, gain: -16 },
+  { at: 2.55, sound: 'whoosh', direction: 'down', duration: 0.6, gain: -30 },
+  { at: 'problem.slow', sound: 'pop', gain: -26 },
+  { at: 'problem.rarely', sound: 'pop', gain: -26 },
+  { at: 6.2, sound: 'riser', duration: 1.8, gain: -17 },
+  { at: 'product.drop', sound: 'impact', gain: -9 },
+  { at: 'product.drop', sound: 'ping', note: 'C6', gain: -20 },
+  { at: 'product.music', sound: 'pop', gain: -26 },
+  { scenes: ['engines', 'upload', 'analyze', 'genre', 'lyrics', 'camera', 'seed', 'choose', 'quality', 'lab'], sound: 'whoosh', direction: 'up', duration: 0.7, gain: -31 },
+  { at: 'engines.headline', offset: 0.35, sound: 'pop', gain: -27, pan: -0.4 },
+  { at: 'engines.headline', offset: 0.49, sound: 'pop', gain: -27 },
+  { at: 'engines.headline', offset: 0.63, sound: 'pop', gain: -27, pan: 0.4 },
+  { at: 'engines.rules', offset: 0, sound: 'tick', note: 'E6', gain: -26 },
+  { at: 'engines.rules', offset: 0.28, sound: 'tick', note: 'G6', gain: -26 },
+  { at: 'engines.rules', offset: 0.56, sound: 'tick', note: 'C7', gain: -26 },
+  { at: 'engines.not', offset: 0.4, sound: 'whoosh', direction: 'up', duration: 0.5, gain: -30 },
+  { at: 'upload.drop', sound: 'whoosh', direction: 'down', duration: 0.6, gain: -29 },
+  { at: 'upload.drop', offset: 0.7, sound: 'thud', gain: -18 },
+  { at: 'upload.panel', sound: 'pop', gain: -25 },
+  { at: 'upload.scan', sound: 'riser', duration: 1.4, gain: -27 },
+  { at: 'upload.done', sound: 'ping', note: 'E6', gain: -21 },
+  { at: 'lane.beat', sound: 'ping', note: 'C5', gain: -21, pan: -0.3 },
+  { at: 'lane.rhythm', sound: 'ping', note: 'D5', gain: -21, pan: -0.15 },
+  { at: 'lane.lows', sound: 'ping', note: 'E5', gain: -21 },
+  { at: 'lane.mids', sound: 'ping', note: 'G5', gain: -21, pan: 0.15 },
+  { at: 'lane.vocals', sound: 'ping', note: 'A5', gain: -21, pan: 0.3 },
+  { at: 'lane.instrumentals', sound: 'ping', note: 'C6', gain: -20 },
+  { at: 'genre.lock', offset: -0.6, sound: 'tick', note: 'C6', gain: -27 },
+  { at: 'genre.lock', offset: -0.45, sound: 'tick', note: 'D6', gain: -27 },
+  { at: 'genre.lock', offset: -0.3, sound: 'tick', note: 'E6', gain: -27 },
+  { at: 'genre.lock', offset: -0.15, sound: 'tick', note: 'G6', gain: -27 },
+  { at: 'genre.lock', sound: 'ping', note: 'C6', gain: -20 },
+  { at: 'genre.adapts', sound: 'ping', note: 'E6', gain: -22 },
+  { at: 'genre.look', sound: 'ping', note: 'G6', gain: -22 },
+  { at: 'genre.fit', sound: 'ping', note: 'A6', gain: -22 },
+  { at: 31.5, sound: 'ping', note: 'E5', gain: -24, pan: -0.2 },
+  { at: 31.75, sound: 'ping', note: 'G5', gain: -26 },
+  { at: 32, sound: 'ping', note: 'A5', gain: -24, pan: 0.2 },
+  { at: 32.5, sound: 'ping', note: 'C6', gain: -24, pan: -0.2 },
+  { at: 32.75, sound: 'ping', note: 'D6', gain: -26 },
+  { at: 33, sound: 'ping', note: 'E6', gain: -23, pan: 0.2 },
+  { at: 34, sound: 'whoosh', direction: 'up', duration: 3.3, gain: -26 },
+  { at: 'seed.start', offset: 0.05, sound: 'whoosh', direction: 'down', duration: 1.2, gain: -29 },
+  { at: 'seed.land', offset: -0.2, sound: 'tick', note: 'C6', gain: -25, pan: -0.5 },
+  { at: 'seed.land', offset: -0.12, sound: 'tick', note: 'D6', gain: -25, pan: -0.35 },
+  { at: 'seed.land', offset: -0.04, sound: 'tick', note: 'E6', gain: -25, pan: -0.2 },
+  { at: 'seed.land', offset: 0.04, sound: 'tick', note: 'G6', gain: -25, pan: -0.05 },
+  { at: 'seed.land', offset: 0.12, sound: 'tick', note: 'A6', gain: -25, pan: 0.1 },
+  { at: 'seed.land', offset: 0.2, sound: 'tick', note: 'C7', gain: -25, pan: 0.25 },
+  { at: 'seed.land', offset: 0.28, sound: 'tick', note: 'D7', gain: -25, pan: 0.4 },
+  { at: 'seed.land', offset: 0.36, sound: 'tick', note: 'E7', gain: -25, pan: 0.5 },
+  { at: 'seed.alike', offset: 0, sound: 'ping', note: 'C5', gain: -22, pan: -0.45 },
+  { at: 'seed.alike', offset: 0.17, sound: 'ping', note: 'E5', gain: -22, pan: -0.15 },
+  { at: 'seed.alike', offset: 0.34, sound: 'ping', note: 'G5', gain: -22, pan: 0.15 },
+  { at: 'seed.alike', offset: 0.51, sound: 'ping', note: 'C6', gain: -21, pan: 0.45 },
+  { at: 'choose.experience', offset: 0.15, sound: 'tick', note: 'G6', gain: -23 },
+  { at: 'choose.experience', offset: 0.65, sound: 'tick', note: 'G6', gain: -23 },
+  { at: 'choose.backdrop', offset: 0.15, sound: 'tick', note: 'A6', gain: -23 },
+  { at: 'choose.backdrop', offset: 0.6, sound: 'tick', note: 'A6', gain: -23 },
+  { at: 'choose.captions', offset: 0.12, sound: 'tick', note: 'C7', gain: -23 },
+  { at: 'choose.captions', offset: 0.55, sound: 'tick', note: 'C7', gain: -23 },
+  { at: 'quality.premium', sound: 'ping', note: 'G5', gain: -22 },
+  { at: 'quality.realtime', sound: 'pop', gain: -25 },
+  { at: 'quality.gpu', sound: 'ping', note: 'C6', gain: -21 },
+  { at: 'lab.self', sound: 'pop', gain: -25 },
+  { at: 'lab.subscription', sound: 'pop', gain: -25 },
+  { at: 'lab.subscription', offset: 0.35, sound: 'ping', note: 'E6', gain: -23 },
+  { at: 49.2, sound: 'riser', duration: 0.8, gain: -26 },
+  { at: 'cta.drop', sound: 'impact', gain: -8 },
+  { at: 'cta.drop', sound: 'chime', notes: ['C5', 'G5', 'C6'], gain: -21 },
+  { at: 'cta.join', sound: 'tick', note: 'E6', gain: -26 },
+  { at: 'cta.early', sound: 'tick', note: 'G6', gain: -26 },
+  { at: 'cta.access', sound: 'tick', note: 'C7', gain: -26 },
+  { at: 'cta.domain', offset: 0.1, sound: 'chime', notes: ['C5', 'E5', 'G5', 'C6'], gain: -19 },
+]);
 
 /**
  * Named moments shared by the visuals and the sound design.
