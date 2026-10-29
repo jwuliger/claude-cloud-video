@@ -19,6 +19,7 @@ const WORD_CUES = ['cta.join', 'cta.early', 'cta.access'];
 export function buildCta(ctx) {
   const { tl, scene, root, cues, layers, kicks } = ctx;
   const drop = cue(cues, 'cta.drop');
+  const beats = [...kicks, ...COPY.cta.tailPulses];
   const centreX = VIDEO.layoutWidth / 2;
 
   const mark = el('div', 'dot', root);
@@ -61,7 +62,7 @@ export function buildCta(ctx) {
     start: scene.start,
     end: scene.end,
     draw: (c, t) =>
-      drawRingPulses(c, t, kicks, {
+      drawRingPulses(c, t, beats, {
         x: centreX,
         y: MARK_Y,
         startRadius: MARK_SIZE / 2 + 8,

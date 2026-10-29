@@ -5,7 +5,7 @@ import { cue } from '../../core/cues.js';
 import { pulse } from '../../core/score.js';
 import { canvasCard } from '../components.js';
 import { el, maskedWord, place } from '../dom.js';
-import { drawLook } from '../draw/looks.js';
+import { crossfadeFloor, drawLook } from '../draw/looks.js';
 import { DURATION, EASE, exitTime, leave, maskIn, riseIn, SCENE_LEAD } from '../motion.js';
 
 const LIST = { x: 120, y: 330, pitch: 104, w: 560, h: 92 };
@@ -85,7 +85,7 @@ export function buildGenre(ctx) {
             seed: VIDEO.seed + index * 31,
             pulse: pulse(kicks, t, 0.25),
             alpha,
-            floor: PALETTE.surface,
+            floor: crossfadeFloor(alpha),
           });
         }
       });

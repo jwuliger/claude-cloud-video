@@ -539,5 +539,10 @@ export const COPY = Object.freeze({
   },
   quality: { live: 'Live', gpu: 'GPU', chips: ['Premium quality', 'Real time', 'GPU'] },
   lab: { title: 'Self-serve lab', rows: ['Self-serve', 'Subscription'], pill: 'Early access open' },
-  cta: { headline: ['Join', 'early', 'access'], domain: 'livemotionlabs.com' },
+  cta: {
+    headline: ['Join', 'early', 'access'],
+    domain: 'livemotionlabs.com',
+    /** Slow rings that keep the mark alive after the beat ends. */
+    tailPulses: [56, 57],
+  },
 });

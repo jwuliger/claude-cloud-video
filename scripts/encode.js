@@ -1,7 +1,7 @@
 /**
  * Encodes the rendered PNG frames and the mastered audio into the final MP4.
  *
- *   node scripts/encode.js [--frames build/frames] [--out dist/film.mp4] [--crf 12] [--preset slow]
+ *   node scripts/encode.js [--frames build/frames] [--out dist/film.mp4] [--crf 10] [--preset slow]
  */
 import { spawnSync } from 'node:child_process';
 import { mkdirSync } from 'node:fs';
@@ -13,11 +13,14 @@ import { MASTER_PATH } from './build-audio.js';
 import { ROOT } from './lib/server.js';
 import { DEFAULT_OUTPUT } from './verify-output.js';
 
+/** Visually lossless for this content; lower is higher quality and a higher bitrate. */
+const DEFAULT_CRF = '10';
+
 const { values } = parseArgs({
   options: {
     frames: { type: 'string', default: join(ROOT, 'build/frames') },
     out: { type: 'string', default: DEFAULT_OUTPUT },
-    crf: { type: 'string', default: '12' },
+    crf: { type: 'string', default: DEFAULT_CRF },
     preset: { type: 'string', default: 'slow' },
   },
 });
@@ -47,7 +50,7 @@ const args = [
   '-preset',
   values.preset ?? 'slow',
   '-crf',
-  values.crf ?? '12',
+  values.crf ?? DEFAULT_CRF,
   '-profile:v',
   'high',
   '-level:v',
@@ -62,7 +65,7 @@ const args = [
   '280M',
   // Dark, flat frames with hairlines: protect them from the encoder's smoothing.
   '-x264-params',
-  'aq-mode=3:aq-strength=0.9:deblock=-1,-1:rc-lookahead=60',
+  'aq-mode=3:aq-strength=0.9:deblock=-1,-1:chroma-qp-offset=-3:rc-lookahead=60',
   '-colorspace',
   'bt709',
   '-color_primaries',

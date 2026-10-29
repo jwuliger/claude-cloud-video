@@ -6,7 +6,7 @@ import { rgba } from '../../core/color.js';
 import { pulse } from '../../core/score.js';
 import { canvasCard } from '../components.js';
 import { el, place, tagLabel } from '../dom.js';
-import { drawLook } from '../draw/looks.js';
+import { crossfadeFloor, drawLook, NO_FLOOR } from '../draw/looks.js';
 import { line } from '../draw/primitives.js';
 import { DURATION, EASE, exitTime, leave, riseIn, SCENE_LEAD } from '../motion.js';
 
@@ -229,7 +229,7 @@ function drawPreview(c, t, w, h, state) {
         seed: VIDEO.seed + index * 17,
         pulse: pulse(state.kicks, t, 0.25),
         alpha,
-        floor: grid || glow ? 'rgba(0,0,0,0)' : PALETTE.surface,
+        floor: grid || glow ? NO_FLOOR : crossfadeFloor(alpha),
       });
     }
   });

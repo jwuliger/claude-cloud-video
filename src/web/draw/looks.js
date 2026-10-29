@@ -12,6 +12,20 @@ import { circle, disc, line, polyline, roundedRect } from './primitives.js';
 
 export const LOOK_NAMES = Object.freeze(['contours', 'rings', 'bars', 'shards']);
 
+/** Pass as `floor` while crossfading, so a look does not dim the one fading in behind it. */
+export const NO_FLOOR = 'rgba(0,0,0,0)';
+
+/** Opacity above which a look counts as fully shown and may hide lines behind its own. */
+const SOLID_ALPHA = 0.98;
+
+/**
+ * @param {number} alpha Current weight of a look in a crossfade.
+ * @returns {string} Fill that hides lines behind lines only once the look is solid.
+ */
+export function crossfadeFloor(alpha) {
+  return alpha > SOLID_ALPHA ? PALETTE.surface : NO_FLOOR;
+}
+
 /**
  * @typedef {object} LookOptions
  * @property {number} w Width of the drawing area in layout pixels.

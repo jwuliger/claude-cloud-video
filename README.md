@@ -8,6 +8,9 @@ generated with an open text-to-speech model.
 > **Not generative AI.** The picture is hand-written procedural animation (rules and math). The film
 > makes no claim beyond the approved list, and the app is not launched: only early access is open.
 
+A 1080p preview is committed at [`preview/live-motion-labs-launch-1080p.mp4`](preview/live-motion-labs-launch-1080p.mp4).
+The full 4K master (`dist/live-motion-labs-launch-4k.mp4`, about 180 MB) is produced by `npm run render`.
+
 ## Quick start
 
 Requires Node 22+, ffmpeg, and a Chromium that Playwright can find (`npx playwright install chromium`).
