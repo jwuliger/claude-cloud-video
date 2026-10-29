@@ -71,7 +71,9 @@ export const MOTION = Object.freeze({
   },
   duration: { micro: 0.25, short: 0.5, base: 0.8, long: 1.3 },
   /** Time before a scene ends when its content starts leaving. */
-  exit: 0.4,
+  exit: 0.3,
+  /** Seconds after a cut before a scene's first element starts to arrive. */
+  sceneLead: 0.05,
 });
 
 /**
@@ -508,6 +510,8 @@ export const COPY = Object.freeze({
     digits: '48201977',
     tiles: [1017, 2290, 5531, 8842],
     tileLabel: 'Seed',
+    /** Each digit lands this long before / after the word "seed", one after another. */
+    roll: { start: 0.1, firstLanding: -0.2, stagger: 0.08 },
   },
   choose: {
     experience: {

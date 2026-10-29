@@ -6,7 +6,7 @@ import { rgba } from '../../core/color.js';
 import { canvasCard } from '../components.js';
 import { el, maskedWord, place } from '../dom.js';
 import { drawFlight, drawPathMap } from '../draw/scene3d.js';
-import { DURATION, leave, maskIn, riseIn } from '../motion.js';
+import { DURATION, exitTime, leave, maskIn, riseIn } from '../motion.js';
 
 const INSET = { x: 1480, y: 640, w: 320, h: 230 };
 
@@ -50,7 +50,7 @@ export function buildCamera(ctx) {
   place(label, { x: 20, y: 18 });
   riseIn(tl, inset, cue(cues, 'camera.moving') + 0.1, { y: 20, duration: DURATION.base });
 
-  leave(tl, [view, headline.outer, sub.outer, inset], scene.end - 0.4, { y: 0 });
+  leave(tl, [view, headline.outer, sub.outer, inset], exitTime(scene), { y: 0 });
 }
 
 /**

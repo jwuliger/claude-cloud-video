@@ -7,7 +7,7 @@ import { pulse } from '../../core/score.js';
 import { canvasCard } from '../components.js';
 import { el, place } from '../dom.js';
 import { drawLook } from '../draw/looks.js';
-import { DURATION, EASE, leave, riseIn } from '../motion.js';
+import { DURATION, EASE, exitTime, leave, riseIn, SCENE_LEAD } from '../motion.js';
 
 const DIGIT_COPIES = 3;
 const DIGIT_STRIP = DIGIT_COPIES * 10;
@@ -20,7 +20,8 @@ const GROUP_AFTER = [1, 4];
  */
 export function buildSeed(ctx) {
   const { tl, scene, root, cues, kicks } = ctx;
-  const start = cue(cues, 'seed.start');
+  const start = scene.start + SCENE_LEAD;
+  const rollStart = scene.start + COPY.seed.roll.start;
   const alike = cue(cues, 'seed.alike');
 
   const label = el('div', 'label', root, COPY.seed.label);
@@ -35,11 +36,14 @@ export function buildSeed(ctx) {
     const digit = Number(COPY.seed.digits[index]);
     const from = -((Math.floor(rng() * 10) + 0) * 100) / DIGIT_STRIP;
     const to = -((20 + digit) * 100) / DIGIT_STRIP;
+    // Digit i comes to rest at a fixed time after the word "seed", one digit after another.
+    const lands =
+      cue(cues, 'seed.land') + COPY.seed.roll.firstLanding + index * COPY.seed.roll.stagger;
     tl.fromTo(
       column,
       { yPercent: from },
-      { yPercent: to, duration: 1.1 + index * 0.08, ease: EASE.out },
-      start + 0.05,
+      { yPercent: to, duration: lands - rollStart, ease: EASE.out },
+      rollStart,
     );
   });
 
@@ -77,7 +81,7 @@ export function buildSeed(ctx) {
   leave(
     tl,
     [label, odometer.row, ...tiles.flatMap(({ card, caption }) => [card, caption])],
-    scene.end - 0.4,
+    exitTime(scene),
   );
 }
 

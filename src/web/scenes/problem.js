@@ -5,7 +5,7 @@ import { cue } from '../../core/cues.js';
 import { clamp01 } from '../../core/math.js';
 import { place, el, maskedWord } from '../dom.js';
 import { line as strokeLine, roundedRect } from '../draw/primitives.js';
-import { DURATION, EASE, leave, maskIn, riseIn } from '../motion.js';
+import { DURATION, EASE, SCENE_LEAD, leave, maskIn, riseIn } from '../motion.js';
 import { rgba } from '../../core/color.js';
 
 const PANEL = { x: 120, y: 450, w: 1682, h: 380 };
@@ -47,11 +47,16 @@ export function buildProblem(ctx) {
     const node = el('div', 'label', root, String(text));
     return place(node, { x: PANEL.x, y: Number(y) });
   });
-  riseIn(tl, labelNodes, scene.start + 0.5, { y: 10, stagger: 0.12, duration: DURATION.short });
+  riseIn(tl, labelNodes, scene.start + 0.25, { y: 10, stagger: 0.12, duration: DURATION.short });
   leave(tl, labelNodes, collapseAt - 0.2);
 
-  tl.fromTo(state, { grid: 0 }, { grid: 1, duration: 1.1, ease: EASE.out }, scene.start + 0.35);
-  tl.fromTo(state, { clips: 0 }, { clips: 1, duration: 1.2, ease: EASE.out }, scene.start + 0.9);
+  tl.fromTo(
+    state,
+    { grid: 0 },
+    { grid: 1, duration: 1.1, ease: EASE.out },
+    scene.start + SCENE_LEAD,
+  );
+  tl.fromTo(state, { clips: 0 }, { clips: 1, duration: 1.2, ease: EASE.out }, scene.start + 0.5);
   tl.fromTo(
     state,
     { drift: 0 },

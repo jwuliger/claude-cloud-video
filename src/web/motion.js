@@ -15,6 +15,16 @@ export const EASE = Object.freeze({
 });
 
 export const DURATION = MOTION.duration;
+export const SCENE_LEAD = MOTION.sceneLead;
+
+/**
+ * When a scene's content should start leaving so it is gone at the cut.
+ * @param {{ end: number }} scene
+ * @returns {number} Seconds.
+ */
+export function exitTime(scene) {
+  return scene.end - MOTION.exit;
+}
 
 /** @typedef {gsap.core.Timeline} Timeline */
 /** @typedef {gsap.TweenTarget} Targets */

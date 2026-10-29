@@ -8,7 +8,7 @@ import { el, maskedWord, place } from '../dom.js';
 import { drawLook } from '../draw/looks.js';
 import { circle, disc, line } from '../draw/primitives.js';
 import { songBars } from '../draw/song.js';
-import { DURATION, EASE, leave, maskIn, riseIn } from '../motion.js';
+import { DURATION, EASE, exitTime, leave, maskIn, riseIn } from '../motion.js';
 
 const NODE_Y = 350;
 const NODE_HEIGHT = 290;
@@ -86,7 +86,7 @@ export function buildEngines(ctx) {
 
   tl.fromTo(state, { links: 0 }, { links: 1, duration: 1.1, ease: EASE.out }, head + 0.9);
 
-  layers.add({
+  const links = layers.add({
     parent: root,
     width: VIDEO.layoutWidth,
     height: VIDEO.layoutHeight,
@@ -95,7 +95,8 @@ export function buildEngines(ctx) {
     draw: (ctx2d, t) => drawLinks(ctx2d, t, state.links, kicks),
   });
 
-  leave(tl, [headline.outer, ...cardList, row], scene.end - 0.4);
+  leave(tl, [headline.outer, ...cardList, row], exitTime(scene));
+  leave(tl, links, exitTime(scene), { y: 0 });
 }
 
 /**

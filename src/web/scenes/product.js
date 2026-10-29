@@ -4,7 +4,7 @@ import { BRAND, COPY, VIDEO } from '../../config/video.config.js';
 import { cue } from '../../core/cues.js';
 import { drawRingPulses } from '../draw/ring-pulses.js';
 import { el, maskedWord, place, wordRow } from '../dom.js';
-import { DURATION, EASE, leave, maskIn } from '../motion.js';
+import { DURATION, EASE, exitTime, leave, maskIn } from '../motion.js';
 
 const MARK_SIZE = 30;
 const LOCKUP_Y = 380;
@@ -49,7 +49,7 @@ export function buildProduct(ctx) {
   place(tagline, { x: 0, y: TAGLINE_Y, w: VIDEO.layoutWidth });
   maskIn(tl, taglineInners, cue(cues, 'product.music'), { stagger: 0.07 });
 
-  leave(tl, [lockup, tagline], scene.end - 0.45);
+  leave(tl, [lockup, tagline], exitTime(scene));
 
   const markCentre = { x: 0, y: LOCKUP_Y + 64 };
   layers.add({

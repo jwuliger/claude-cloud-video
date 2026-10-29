@@ -8,7 +8,7 @@ import { canvasCard } from '../components.js';
 import { el, maskedWord, place } from '../dom.js';
 import { drawLook } from '../draw/looks.js';
 import { disc, line } from '../draw/primitives.js';
-import { DURATION, EASE, leave, riseIn } from '../motion.js';
+import { DURATION, EASE, exitTime, leave, riseIn, SCENE_LEAD } from '../motion.js';
 
 const FRAME = { x: 240, y: 130, w: 1440, h: 700 };
 const LINE_HEIGHT = 150;
@@ -39,7 +39,7 @@ export function buildLyrics(ctx) {
       drawTicker(c, t, w, times);
     },
   });
-  riseIn(tl, frame, startAt, { y: 24, duration: DURATION.base });
+  riseIn(tl, frame, scene.start + SCENE_LEAD, { y: 24, duration: DURATION.base });
 
   let wordIndex = 0;
   lines.forEach((words, lineIndex) => {
@@ -66,7 +66,7 @@ export function buildLyrics(ctx) {
     });
   });
 
-  leave(tl, frame, scene.end - 0.4);
+  leave(tl, frame, exitTime(scene));
 }
 
 /**

@@ -3,7 +3,7 @@
 import { BRAND, COPY, PALETTE } from '../../config/video.config.js';
 import { cue } from '../../core/cues.js';
 import { el, place } from '../dom.js';
-import { DURATION, EASE, leave, riseIn } from '../motion.js';
+import { DURATION, EASE, exitTime, leave, riseIn } from '../motion.js';
 
 const CARD = { x: 600, y: 230, w: 720, h: 480 };
 const ROW_Y = 180;
@@ -56,5 +56,5 @@ export function buildLab(ctx) {
     scene.start + 0.3,
   );
 
-  leave(tl, card, scene.end - 0.4);
+  leave(tl, card, exitTime(scene));
 }

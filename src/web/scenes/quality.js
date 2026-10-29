@@ -7,7 +7,7 @@ import { canvasCard } from '../components.js';
 import { el, place } from '../dom.js';
 import { drawLook } from '../draw/looks.js';
 import { circle, disc, line, roundedRect } from '../draw/primitives.js';
-import { DURATION, leave, riseIn } from '../motion.js';
+import { DURATION, exitTime, leave, riseIn, SCENE_LEAD } from '../motion.js';
 
 const FRAME = { x: 360, y: 100, w: 1200, h: 675 };
 const CHIP_ROW_Y = 820;
@@ -42,7 +42,7 @@ export function buildQuality(ctx) {
   place(live, { x: 66, y: 31 });
   const gpu = el('div', 'label strong', frame, COPY.quality.gpu);
   place(gpu, { x: FRAME.w - 150, y: 31 });
-  riseIn(tl, frame, scene.start + 0.1, { y: 28, duration: DURATION.long });
+  riseIn(tl, frame, scene.start + SCENE_LEAD, { y: 28, duration: DURATION.long });
 
   const row = el('div', 'abs', root);
   place(row, { x: 0, y: CHIP_ROW_Y, w: VIDEO.layoutWidth });
@@ -59,7 +59,7 @@ export function buildQuality(ctx) {
     return chip;
   });
 
-  leave(tl, [frame, ...chips], scene.end - 0.4);
+  leave(tl, [frame, ...chips], exitTime(scene));
 }
 
 /**

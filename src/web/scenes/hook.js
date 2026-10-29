@@ -4,7 +4,7 @@ import { COPY, VIDEO } from '../../config/video.config.js';
 import { cue } from '../../core/cues.js';
 import { drawPulseLine } from '../draw/pulse-line.js';
 import { place, wordRow } from '../dom.js';
-import { DURATION, EASE, leave, maskIn } from '../motion.js';
+import { DURATION, EASE, exitTime, leave, maskIn } from '../motion.js';
 
 const BASELINE_Y = 650;
 const AMPLITUDE = 150;
@@ -48,5 +48,5 @@ export function buildHook(ctx) {
     draw: (ctx2d, t) => drawPulseLine(ctx2d, t, state, kicks),
   });
 
-  leave(tl, row, scene.end - 0.45);
+  leave(tl, row, exitTime(scene));
 }

@@ -8,7 +8,7 @@ import { noise1 } from '../../core/noise.js';
 import { createRng } from '../../core/rng.js';
 import { maskedWord, place } from '../dom.js';
 import { line, polyline, roundedRect } from '../draw/primitives.js';
-import { EASE, leave, maskIn } from '../motion.js';
+import { EASE, exitTime, leave, maskIn, SCENE_LEAD } from '../motion.js';
 
 const LANE = { x: 400, w: 1400, h: 76, gap: 22, top: 168 };
 const BEAT_PITCH = 70;
@@ -74,7 +74,12 @@ export function buildAnalyze(ctx) {
   const states = lanes.map(() => ({ reveal: 0, hot: 0 }));
   const frame = { lines: 0, play: 0 };
 
-  tl.fromTo(frame, { lines: 0 }, { lines: 1, duration: 0.9, ease: EASE.out }, scene.start + 0.15);
+  tl.fromTo(
+    frame,
+    { lines: 0 },
+    { lines: 1, duration: 0.9, ease: EASE.out },
+    scene.start + SCENE_LEAD,
+  );
   const firstAt = cue(cues, `lane.${lanes[0]?.id ?? 'beat'}`);
   tl.fromTo(
     frame,
@@ -95,7 +100,7 @@ export function buildAnalyze(ctx) {
     tl.fromTo(state, { reveal: 0 }, { reveal: 1, duration: REVEAL_SECONDS, ease: EASE.out }, at);
     tl.fromTo(state, { hot: 0 }, { hot: 1, duration: 0.25, ease: EASE.out }, at);
     tl.to(state, { hot: 0, duration: 0.6, ease: EASE.inOut }, at + HOT_SECONDS);
-    leave(tl, outer, scene.end - 0.4);
+    leave(tl, outer, exitTime(scene));
   });
 
   const layer = layers.add({
@@ -106,7 +111,7 @@ export function buildAnalyze(ctx) {
     end: scene.end,
     draw: (c, t) => drawLanes(c, t, states, frame),
   });
-  leave(tl, layer, scene.end - 0.4, { y: 0 });
+  leave(tl, layer, exitTime(scene), { y: 0 });
 }
 
 /**

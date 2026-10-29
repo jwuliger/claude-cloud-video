@@ -6,7 +6,7 @@ import { pulse } from '../../core/score.js';
 import { canvasCard } from '../components.js';
 import { el, maskedWord, place } from '../dom.js';
 import { drawLook } from '../draw/looks.js';
-import { DURATION, EASE, leave, maskIn, riseIn } from '../motion.js';
+import { DURATION, EASE, exitTime, leave, maskIn, riseIn, SCENE_LEAD } from '../motion.js';
 
 const LIST = { x: 120, y: 330, pitch: 104, w: 560, h: 92 };
 const PREVIEW = { x: 800, y: 250, w: 1000, h: 520 };
@@ -21,12 +21,13 @@ export function buildGenre(ctx) {
   const lock = cue(cues, 'genre.lock');
   const hops = [lock, cue(cues, 'genre.adapts'), cue(cues, 'genre.look'), cue(cues, 'genre.fit')];
   const weights = items.map(() => ({ alpha: 0 }));
+  const open = scene.start + SCENE_LEAD;
 
   const heading = el('div', 'label', root, COPY.genre.label);
   place(heading, { x: LIST.x, y: LIST.y - 64 });
   const dot = el('div', 'dot', root);
   place(dot, { x: LIST.x + 188, y: LIST.y - 60, w: 8, h: 8 });
-  riseIn(tl, [heading, dot], cue(cues, 'genre.detects'), { y: 12, duration: DURATION.short });
+  riseIn(tl, [heading, dot], open, { y: 12, duration: DURATION.short });
 
   const indicator = el('div', 'card', root);
   place(indicator, { x: LIST.x - 20, y: LIST.y - 8, w: LIST.w, h: LIST.h });
@@ -37,14 +38,14 @@ export function buildGenre(ctx) {
   const rows = items.map((item, index) => {
     const word = maskedWord(root, item.name, 'headline nowrap dim');
     place(word.outer, { x: LIST.x, y: LIST.y + index * LIST.pitch });
-    maskIn(tl, word.inner, cue(cues, 'genre.detects') + 0.1 + index * 0.08);
+    maskIn(tl, word.inner, open + 0.05 + index * 0.08);
     return word.outer;
   });
   tl.fromTo(
     indicator,
     { opacity: 0, y: rowY(0) - LIST.y + 8 },
     { opacity: 1, duration: 0.3 },
-    cue(cues, 'genre.detects'),
+    open + 0.1,
   );
 
   scanThenLock(tl, indicator, lock, rowY);
@@ -60,7 +61,9 @@ export function buildGenre(ctx) {
     }
     const weight = weights[index];
     if (weight) {
-      tl.fromTo(weight, { alpha: 0 }, { alpha: 1, duration: 0.6, ease: EASE.inOut }, at);
+      // The first look fades in while the selection is still scanning, so the card is never empty.
+      const fadeAt = index === 0 ? at - 0.55 : at;
+      tl.fromTo(weight, { alpha: 0 }, { alpha: 1, duration: 0.6, ease: EASE.inOut }, fadeAt);
       const next = hops[index + 1];
       if (next !== undefined) {
         tl.to(weight, { alpha: 0, duration: 0.6, ease: EASE.inOut }, next);
@@ -88,9 +91,9 @@ export function buildGenre(ctx) {
       });
     },
   });
-  riseIn(tl, preview, cue(cues, 'genre.detects') + 0.2, { y: 24, duration: DURATION.base });
+  riseIn(tl, preview, open + 0.1, { y: 24, duration: DURATION.base });
 
-  leave(tl, [heading, dot, indicator, preview, ...rows], scene.end - 0.4);
+  leave(tl, [heading, dot, indicator, preview, ...rows], exitTime(scene));
 }
 
 /**

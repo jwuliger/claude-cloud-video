@@ -8,7 +8,7 @@ import { canvasCard } from '../components.js';
 import { el, place } from '../dom.js';
 import { drawLook } from '../draw/looks.js';
 import { line } from '../draw/primitives.js';
-import { DURATION, EASE, leave, riseIn } from '../motion.js';
+import { DURATION, EASE, exitTime, leave, riseIn, SCENE_LEAD } from '../motion.js';
 
 const PREVIEW = { x: 720, y: 150, w: 1080, h: 640 };
 const ROW = { x: 120, w: 520, h: 54, gap: 10 };
@@ -70,7 +70,7 @@ export function buildChoose(ctx) {
   const expAt = cue(cues, 'choose.experience');
   const bdAt = cue(cues, 'choose.backdrop');
   const capAt = cue(cues, 'choose.captions');
-  const entrance = scene.start + 0.2;
+  const entrance = scene.start + SCENE_LEAD;
 
   const looks = experience.looks.map((_, i) => ({ alpha: i === 0 ? 1 : 0 }));
   const grounds = backdrop.items.map((_, i) => ({ alpha: i === 0 ? 1 : 0 }));
@@ -162,7 +162,7 @@ export function buildChoose(ctx) {
   });
   [1, 2].forEach((index) => select(tl, styles, index, capAt + 0.12 + (index - 1) * 0.43));
 
-  leave(tl, [...controls, preview], scene.end - 0.4);
+  leave(tl, [...controls, preview], exitTime(scene));
 }
 
 /**

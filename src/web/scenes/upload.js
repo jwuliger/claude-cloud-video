@@ -6,7 +6,7 @@ import { clamp01 } from '../../core/math.js';
 import { el, maskedWord, place } from '../dom.js';
 import { line } from '../draw/primitives.js';
 import { songBars } from '../draw/song.js';
-import { DURATION, EASE, leave, maskIn, riseIn } from '../motion.js';
+import { DURATION, EASE, exitTime, leave, maskIn, riseIn, SCENE_LEAD } from '../motion.js';
 import { rgba } from '../../core/color.js';
 
 const ZONE = { x: 120, y: 360, w: 1680, h: 300 };
@@ -33,8 +33,8 @@ export function buildUpload(ctx) {
   zone.style.background = 'transparent';
   const zoneLabel = maskedWord(zone, COPY.upload.zone, 'title dim');
   place(zoneLabel.outer, { x: ZONE.w / 2 - 110, y: ZONE.h / 2 - 28 });
-  riseIn(tl, zone, scene.start + 0.1, { y: 20 });
-  maskIn(tl, zoneLabel.inner, scene.start + 0.35);
+  riseIn(tl, zone, scene.start + SCENE_LEAD, { y: 20 });
+  maskIn(tl, zoneLabel.inner, scene.start + 0.2);
 
   const panel = el('div', 'card', root);
   place(panel, ZONE);
@@ -95,7 +95,7 @@ export function buildUpload(ctx) {
     },
   });
 
-  leave(tl, [zone, panel, chip, complete], scene.end - 0.4);
+  leave(tl, [zone, panel, chip, complete], exitTime(scene));
 }
 
 const BARS = songBars(BAR_COUNT);
