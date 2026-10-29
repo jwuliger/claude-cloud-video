@@ -31,7 +31,12 @@ export function buildHook(ctx) {
 
   const state = { y: BASELINE_Y, grow: 0, ignite: 0, amplitude: AMPLITUDE };
   tl.fromTo(state, { grow: 0 }, { grow: 1, duration: 1.2, ease: EASE.out }, scene.start + 0.05);
-  tl.fromTo(state, { ignite: 0 }, { ignite: 1, duration: 0.35, ease: EASE.out }, cue(cues, 'hook.ignite'));
+  tl.fromTo(
+    state,
+    { ignite: 0 },
+    { ignite: 1, duration: 0.35, ease: EASE.out },
+    cue(cues, 'hook.ignite'),
+  );
   tl.to(state, { ignite: 0, duration: 0.5, ease: EASE.inOut }, scene.end - 0.5);
 
   layers.add({

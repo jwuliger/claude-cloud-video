@@ -57,7 +57,9 @@ export async function openFilm(browser, baseUrl, scale = VIDEO.width / VIDEO.lay
   });
   await page.goto(`${baseUrl}/src/web/index.html`);
   await page.waitForFunction(
-    () => document.documentElement.dataset['ready'] === 'true' || document.documentElement.dataset['error'],
+    () =>
+      document.documentElement.dataset['ready'] === 'true' ||
+      document.documentElement.dataset['error'],
     undefined,
     { timeout: 60_000 },
   );

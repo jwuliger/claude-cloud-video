@@ -52,7 +52,12 @@ export function buildProblem(ctx) {
 
   tl.fromTo(state, { grid: 0 }, { grid: 1, duration: 1.1, ease: EASE.out }, scene.start + 0.35);
   tl.fromTo(state, { clips: 0 }, { clips: 1, duration: 1.2, ease: EASE.out }, scene.start + 0.9);
-  tl.fromTo(state, { drift: 0 }, { drift: 1, duration: 1.3, ease: EASE.inOut }, cue(cues, 'problem.rarely'));
+  tl.fromTo(
+    state,
+    { drift: 0 },
+    { drift: 1, duration: 1.3, ease: EASE.inOut },
+    cue(cues, 'problem.rarely'),
+  );
   tl.fromTo(state, { collapse: 0 }, { collapse: 1, duration: 0.9, ease: EASE.in }, collapseAt);
 
   layers.add({
@@ -78,7 +83,15 @@ function drawPanel(ctx, state) {
     const half = middle * progress * keep;
     const x = i * BEAT_WIDTH + 0.5;
     strokeLine(ctx, x, middle - half, x, middle + half, PALETTE.lineStrong, keep * 0.7);
-    strokeLine(ctx, x, TICK_Y - 8 * progress * keep, x, TICK_Y + 8 * progress * keep, PALETTE.accent, keep);
+    strokeLine(
+      ctx,
+      x,
+      TICK_Y - 8 * progress * keep,
+      x,
+      TICK_Y + 8 * progress * keep,
+      PALETTE.accent,
+      keep,
+    );
   }
   CLIPS.forEach(([beat, span, drift], index) => {
     const arrival = EASE.out(clamp01(state.clips * 1.7 - index * 0.2));

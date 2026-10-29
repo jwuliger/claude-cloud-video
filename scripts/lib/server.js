@@ -39,7 +39,10 @@ export function startServer(port = 0) {
       const actualPort = typeof address === 'object' && address ? address.port : port;
       resolve({
         url: `http://127.0.0.1:${actualPort}`,
-        close: () => new Promise((done) => server.close(() => done(undefined))),
+        close: () =>
+          new Promise((done) => {
+            server.close(() => done(undefined));
+          }),
       });
     });
   });

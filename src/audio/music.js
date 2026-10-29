@@ -29,7 +29,7 @@ function sectionAt(time) {
 
 /**
  * @param {number} bar Zero-based bar index.
- * @returns {typeof SCORE.voicings[keyof typeof SCORE.voicings]}
+ * @returns {{ root: string, pad: string[], arp: string[], bell: string[] }}
  */
 function voicingForBar(bar) {
   const overrides = /** @type {Record<number, string>} */ (SCORE.overrides);
@@ -86,7 +86,8 @@ function place(rig, bus, clip, time, mix) {
 /** @param {Rig} rig */
 function renderDrums(rig) {
   const { sampleRate } = rig;
-  const hits = (/** @type {string} */ name) => hitTimes(DRUMS[name] ?? [], VIDEO.bpm, VIDEO.beatsPerBar);
+  const hits = (/** @type {string} */ name) =>
+    hitTimes(DRUMS[name] ?? [], VIDEO.bpm, VIDEO.beatsPerBar);
   hits('kick').forEach((time, index) => {
     const heartbeat = time < 3;
     place(rig, 'drums', kick({ sampleRate, seed: index, weight: heartbeat ? 0.8 : 1 }), time, {
@@ -138,9 +139,15 @@ function renderBass(rig) {
             [8, 1, 0.9],
           ];
     for (const [step = 0, multiple = 1, duration = 0.2] of notes) {
-      place(rig, 'bass', bass({ sampleRate, hz: hz * multiple, duration }), barStart + step * STEP, {
-        gain: section.bass === 'long' ? 0.46 : 0.5,
-      });
+      place(
+        rig,
+        'bass',
+        bass({ sampleRate, hz: hz * multiple, duration }),
+        barStart + step * STEP,
+        {
+          gain: section.bass === 'long' ? 0.46 : 0.5,
+        },
+      );
     }
   }
 }
@@ -173,8 +180,11 @@ function renderPad(rig) {
   }
 }
 
-/** Low drone under the hook and the problem, so the silence before the drop has weight. */
-function renderDrone(/** @type {Rig} */ rig) {
+/**
+ * Low drone under the hook and the problem, so the silence before the drop has weight.
+ * @param {Rig} rig
+ */
+function renderDrone(rig) {
   const { sampleRate } = rig;
   const length = Math.round(8.4 * sampleRate);
   const clip = new Float32Array(length);
@@ -201,47 +211,93 @@ function drift(time) {
   return SCORE.driftSeconds * smoothstep(SCORE.driftFrom, SCORE.driftTo, time);
 }
 
+/**
+ * Which chord tone an arpeggio step plays.
+ * @param {string} style Section arp style.
+ * @param {readonly string[]} notes Chord tones, low to high.
+ * @param {number} slot Index of the note within the bar.
+ * @returns {string}
+ */
+function arpNote(style, notes, slot) {
+  if (style === 'drift') {
+    return notes[slot % 2 === 0 ? 3 : 2] ?? 'A4';
+  }
+  const pattern = style === 'sixteenth' ? SIXTEENTH_PATTERN : EIGHTH_PATTERN;
+  return notes[pattern[slot % pattern.length] ?? 0] ?? 'A4';
+}
+
+/**
+ * Loudness accent for a sixteenth-note step: strong on beats, softer between.
+ * @param {number} step
+ * @returns {number}
+ */
+function accentFor(step) {
+  if (step % 4 === 0) {
+    return 1;
+  }
+  return step % 2 === 0 ? 0.78 : 0.55;
+}
+
+/**
+ * Place one arpeggio note. In the problem scene the notes arrive progressively late.
+ * @param {Rig} rig
+ * @param {{ style: string, noteName: string, time: number, step: number, slot: number }} note
+ */
+function placeArpNote(rig, note) {
+  const { style, noteName, time, step, slot } = note;
+  const sixteenth = style === 'sixteenth';
+  const clip = pluck({
+    sampleRate: rig.sampleRate,
+    hz: noteToHz(noteName),
+    duration: sixteenth ? 0.28 : 0.45,
+    brightness: 0.55 + 0.6 * (time / VIDEO.duration),
+  });
+  const accent = accentFor(step);
+  const pan = slot % 2 ? 0.35 : -0.35;
+  if (style === 'drift') {
+    place(rig, 'arp', clip, time + drift(time), { gain: 0.14 * accent, pan, reverb: 0.2 });
+    return;
+  }
+  place(rig, 'arp', clip, time, {
+    gain: (sixteenth ? 0.13 : 0.17) * accent,
+    pan,
+    reverb: 0.25,
+    delay: 0.42,
+  });
+}
+
 /** @param {Rig} rig */
 function renderArp(rig) {
-  const { sampleRate } = rig;
   for (let bar = 0; bar * BAR < VIDEO.duration; bar += 1) {
     const barStart = bar * BAR;
-    const section = sectionAt(barStart);
-    if (section.arp === 'none') {
+    const style = sectionAt(barStart).arp;
+    if (style === 'none') {
       continue;
     }
     const notes = voicingForBar(bar).arp;
-    const sixteenth = section.arp === 'sixteenth';
-    const stepsPerNote = sixteenth ? 1 : 2;
+    const stepsPerNote = style === 'sixteenth' ? 1 : 2;
     for (let step = 0; step < 16; step += stepsPerNote) {
       const time = barStart + step * STEP;
-      if (sectionAt(time).arp !== section.arp) {
+      if (sectionAt(time).arp !== style) {
         continue;
       }
       const slot = step / stepsPerNote;
-      const pattern = sixteenth ? SIXTEENTH_PATTERN : EIGHTH_PATTERN;
-      const noteName =
-        section.arp === 'drift' ? notes[slot % 2 === 0 ? 3 : 2] : notes[pattern[slot % pattern.length] ?? 0];
-      const accent = step % 4 === 0 ? 1 : step % 2 === 0 ? 0.78 : 0.55;
-      const brightness = 0.55 + 0.6 * (time / VIDEO.duration);
-      const clip = pluck({
-        sampleRate,
-        hz: noteToHz(noteName ?? 'A4'),
-        duration: sixteenth ? 0.28 : 0.45,
-        brightness,
-      });
-      if (section.arp === 'drift') {
-        place(rig, 'arp', clip, time + drift(time), { gain: 0.14 * accent, pan: slot % 2 ? 0.3 : -0.3, reverb: 0.2 });
-      } else {
-        place(rig, 'arp', clip, time, {
-          gain: (sixteenth ? 0.13 : 0.17) * accent,
-          pan: slot % 2 ? 0.35 : -0.35,
-          reverb: 0.25,
-          delay: 0.42,
-        });
-      }
+      placeArpNote(rig, { style, noteName: arpNote(style, notes, slot), time, step, slot });
     }
   }
+}
+
+/**
+ * Sixteenth-note steps where bells ring: more often when no arpeggio is playing.
+ * @param {boolean} sparse True when the arpeggio is silent.
+ * @param {number} bar
+ * @returns {number[]}
+ */
+function bellSteps(sparse, bar) {
+  if (sparse) {
+    return [8, 14];
+  }
+  return bar % 2 === 0 ? [10] : [10, 14];
 }
 
 /** @param {Rig} rig */
@@ -254,19 +310,25 @@ function renderBells(rig) {
       continue;
     }
     const notes = voicingForBar(bar).bell;
-    const steps = section.arp === 'none' ? [8, 14] : bar % 2 === 0 ? [10] : [10, 14];
+    const steps = bellSteps(section.arp === 'none', bar);
     steps.forEach((step, index) => {
       const time = barStart + step * STEP;
       if (!sectionAt(time).bells) {
         return;
       }
       const name = notes[(bar + index) % notes.length] ?? 'C6';
-      place(rig, 'bells', bell({ sampleRate, hz: noteToHz(name), duration: 1.9, shine: 0.9 }), time, {
-        gain: section.arp === 'none' ? 0.17 : 0.12,
-        pan: (bar + index) % 2 ? 0.4 : -0.4,
-        reverb: 0.55,
-        delay: 0.4,
-      });
+      place(
+        rig,
+        'bells',
+        bell({ sampleRate, hz: noteToHz(name), duration: 1.9, shine: 0.9 }),
+        time,
+        {
+          gain: section.arp === 'none' ? 0.17 : 0.12,
+          pan: (bar + index) % 2 ? 0.4 : -0.4,
+          reverb: 0.55,
+          delay: 0.4,
+        },
+      );
     });
   }
 }
@@ -311,7 +373,14 @@ export function renderMusic(options) {
   });
 
   const master = createStereo(frames);
-  for (const bus of [rig.buses.drums, rig.buses.bass, rig.buses.pad, rig.buses.arp, rig.buses.bells, rig.buses.drone]) {
+  for (const bus of [
+    rig.buses.drums,
+    rig.buses.bass,
+    rig.buses.pad,
+    rig.buses.arp,
+    rig.buses.bells,
+    rig.buses.drone,
+  ]) {
     addStereo(master, bus);
   }
   addStereo(master, wetReverb, 0.85);
@@ -323,7 +392,14 @@ export function renderMusic(options) {
     filterInPlace(channel, 'peaking', 380, sampleRate, { q: 0.8, gainDb: -2 });
     filterInPlace(channel, 'peaking', 2600, sampleRate, { q: 0.8, gainDb: -2.5 });
   }
-  compress(master, { sampleRate, thresholdDb: -18, ratio: 2, attack: 0.02, release: 0.18, makeupDb: 2 });
+  compress(master, {
+    sampleRate,
+    thresholdDb: -18,
+    ratio: 2,
+    attack: 0.02,
+    release: 0.18,
+    makeupDb: 2,
+  });
   softClip(master, 1.15);
   applyEndFades(master, sampleRate);
   return master;

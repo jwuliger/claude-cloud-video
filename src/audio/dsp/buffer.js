@@ -7,6 +7,8 @@
 const A4_HZ = 440;
 const A4_MIDI = 69;
 const NOTE_INDEX = Object.freeze({ C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 });
+/** @type {Readonly<Record<string, number>>} */
+const ACCIDENTAL_SHIFT = Object.freeze({ '#': 1, b: -1, '': 0 });
 
 /**
  * @param {number} frames
@@ -16,12 +18,18 @@ export function createStereo(frames) {
   return { l: new Float32Array(frames), r: new Float32Array(frames) };
 }
 
-/** @param {number} db @returns {number} Linear gain. */
+/**
+ * @param {number} db
+ * @returns {number} Linear gain.
+ */
 export function dbToGain(db) {
   return 10 ** (db / 20);
 }
 
-/** @param {number} gain @returns {number} Decibels. */
+/**
+ * @param {number} gain
+ * @returns {number} Decibels.
+ */
 export function gainToDb(gain) {
   return 20 * Math.log10(Math.max(gain, 1e-9));
 }
@@ -45,11 +53,14 @@ export function noteToMidi(name) {
   }
   const [, letter = 'C', accidental = '', octave = '4'] = match;
   const base = /** @type {Record<string, number>} */ (NOTE_INDEX)[letter] ?? 0;
-  const shift = accidental === '#' ? 1 : accidental === 'b' ? -1 : 0;
+  const shift = ACCIDENTAL_SHIFT[accidental] ?? 0;
   return 12 * (Number(octave) + 1) + base + shift;
 }
 
-/** @param {string} name @returns {number} Frequency in Hz. */
+/**
+ * @param {string} name
+ * @returns {number} Frequency in Hz.
+ */
 export function noteToHz(name) {
   return midiToHz(noteToMidi(name));
 }

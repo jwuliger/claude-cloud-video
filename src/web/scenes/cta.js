@@ -22,7 +22,12 @@ export function buildCta(ctx) {
   const centreX = VIDEO.layoutWidth / 2;
 
   const mark = el('div', 'dot', root);
-  place(mark, { x: centreX - MARK_SIZE / 2, y: MARK_Y - MARK_SIZE / 2, w: MARK_SIZE, h: MARK_SIZE });
+  place(mark, {
+    x: centreX - MARK_SIZE / 2,
+    y: MARK_Y - MARK_SIZE / 2,
+    w: MARK_SIZE,
+    h: MARK_SIZE,
+  });
   tl.fromTo(mark, { scale: 0 }, { scale: 1, duration: DURATION.base, ease: EASE.out }, drop);
 
   const { row, inners } = wordRow(root, COPY.cta.headline, { className: 'display' });
@@ -42,7 +47,12 @@ export function buildCta(ctx) {
   underline.style.background = PALETTE.accent;
   place(underline, { x: centreX - width / 2, y: DOMAIN_Y + 76 + UNDERLINE_GAP, w: width, h: 2 });
   underline.style.transformOrigin = '0 50%';
-  tl.fromTo(underline, { scaleX: 0 }, { scaleX: 1, duration: DURATION.long, ease: EASE.out }, domainAt + 0.2);
+  tl.fromTo(
+    underline,
+    { scaleX: 0 },
+    { scaleX: 1, duration: DURATION.long, ease: EASE.out },
+    domainAt + 0.2,
+  );
 
   layers.add({
     parent: root,

@@ -65,7 +65,12 @@ function drawContours(ctx, o) {
       const u = x / o.w;
       const bell = Math.exp(-(((u - v.centre) / v.spread) ** 2) * 0.35);
       const n = noise2(u * v.frequency * 2.2 + o.t * v.speed, row * 3.1 + i * 0.02, o.seed);
-      const height = o.h * 0.2 * v.amplitude * bell * (0.35 + 0.65 * o.pulse + 0.25 * Math.sin(o.t * 0.9 + row * 5));
+      const height =
+        o.h *
+        0.2 *
+        v.amplitude *
+        bell *
+        (0.35 + 0.65 * o.pulse + 0.25 * Math.sin(o.t * 0.9 + row * 5));
       points.push(x, base - Math.max(0, n * 0.6 + 0.4) * height + (u - 0.5) * v.tilt * o.h * 0.4);
     }
     const first = points[0] ?? 0;
@@ -111,7 +116,10 @@ function drawRings(ctx, o) {
     ctx.beginPath();
     ctx.arc(cx, cy, radius, start, start + sweep);
     ctx.lineWidth = isAccent ? 1.8 : 1;
-    ctx.strokeStyle = rgba(isAccent ? PALETTE.accent : PALETTE.text, isAccent ? 1 : 0.62 - (i / count) * 0.42);
+    ctx.strokeStyle = rgba(
+      isAccent ? PALETTE.accent : PALETTE.text,
+      isAccent ? 1 : 0.62 - (i / count) * 0.42,
+    );
     ctx.stroke();
     if (isAccent) {
       const angle = start + sweep * (0.5 + 0.5 * Math.sin(o.t * 1.3));
@@ -144,7 +152,16 @@ function drawBars(ctx, o) {
     const isPeak = height > tallest * 0.9;
     const color = isPeak ? PALETTE.accent : PALETTE.text;
     ctx.lineCap = 'round';
-    line(ctx, x, mid - height, x, mid + height * 0.55, color, isPeak ? 1 : 0.2 + 0.6 * (height / tallest), isPeak ? 2.4 : 1.6);
+    line(
+      ctx,
+      x,
+      mid - height,
+      x,
+      mid + height * 0.55,
+      color,
+      isPeak ? 1 : 0.2 + 0.6 * (height / tallest),
+      isPeak ? 2.4 : 1.6,
+    );
   });
   line(ctx, margin, mid, o.w - margin, mid, PALETTE.lineStrong, 1, 1);
 }
@@ -175,7 +192,10 @@ function drawShards(ctx, o) {
     }
     ctx.lineWidth = isAccent ? 1.8 : 1;
     ctx.lineJoin = 'round';
-    ctx.strokeStyle = rgba(isAccent ? PALETTE.accent : PALETTE.text, isAccent ? 1 : 0.6 - (i / count) * 0.45);
+    ctx.strokeStyle = rgba(
+      isAccent ? PALETTE.accent : PALETTE.text,
+      isAccent ? 1 : 0.6 - (i / count) * 0.45,
+    );
     ctx.stroke();
   }
   circle(ctx, cx, cy, 3 + 3 * o.pulse, PALETTE.text, 0.8, 1);

@@ -54,7 +54,9 @@ export function validateScenes(scenes, duration) {
   let cursor = 0;
   for (const scene of scenes) {
     if (Math.abs(scene.start - cursor) > 1e-9) {
-      problems.push(`Scene "${scene.id}" starts at ${scene.start} but the previous one ended at ${cursor}.`);
+      problems.push(
+        `Scene "${scene.id}" starts at ${scene.start} but the previous one ended at ${cursor}.`,
+      );
     }
     if (scene.end <= scene.start) {
       problems.push(`Scene "${scene.id}" ends before it starts.`);

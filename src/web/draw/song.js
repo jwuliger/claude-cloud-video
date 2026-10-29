@@ -35,7 +35,8 @@ function sectionLevel(u) {
 export function songBars(count) {
   return Array.from({ length: count }, (_, i) => {
     const u = i / (count - 1);
-    const texture = 0.4 + 0.6 * Math.abs(noise1(i * 0.9, VIDEO.seed)) + 0.15 * hash2(i, 1, VIDEO.seed);
+    const texture =
+      0.4 + 0.6 * Math.abs(noise1(i * 0.9, VIDEO.seed)) + 0.15 * hash2(i, 1, VIDEO.seed);
     return clamp01(0.06 + sectionLevel(u) * texture);
   });
 }

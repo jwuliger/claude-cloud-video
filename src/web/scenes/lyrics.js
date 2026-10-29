@@ -84,7 +84,14 @@ function drawTicker(c, t, w, times) {
   const position = (/** @type {number} */ time) => x0 + (x1 - x0) * invLerp(from, to, time);
   times.forEach((time) => {
     const landed = t >= time;
-    disc(c, position(time), TICKER_Y, landed ? 5.5 : 3.5, landed ? PALETTE.accent : PALETTE.textDim, landed ? 1 : 0.8);
+    disc(
+      c,
+      position(time),
+      TICKER_Y,
+      landed ? 5.5 : 3.5,
+      landed ? PALETTE.accent : PALETTE.textDim,
+      landed ? 1 : 0.8,
+    );
   });
   const head = position(Math.min(Math.max(t, from), to));
   line(c, head, TICKER_Y - 14, head, TICKER_Y + 14, PALETTE.text, 0.8, 1.5);

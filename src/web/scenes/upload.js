@@ -72,7 +72,12 @@ export function buildUpload(ctx) {
   reading.style.marginRight = '4px';
 
   tl.fromTo(state, { bars: 0 }, { bars: 1, duration: 1, ease: EASE.out }, panelAt + 0.15);
-  tl.fromTo(state, { scan: 0 }, { scan: 1, duration: doneAt - scanAt - 0.1, ease: EASE.linear }, scanAt);
+  tl.fromTo(
+    state,
+    { scan: 0 },
+    { scan: 1, duration: doneAt - scanAt - 0.1, ease: EASE.linear },
+    scanAt,
+  );
 
   layers.add({
     parent: panel,
@@ -96,6 +101,18 @@ export function buildUpload(ctx) {
 const BARS = songBars(BAR_COUNT);
 
 /**
+ * @param {boolean} read Whether the scan has passed this bar.
+ * @param {boolean} peak Whether this bar is among the loudest.
+ * @returns {string} Hex colour.
+ */
+function barColor(read, peak) {
+  if (peak) {
+    return PALETTE.accent;
+  }
+  return read ? PALETTE.text : PALETTE.textDim;
+}
+
+/**
  * @param {CanvasRenderingContext2D} ctx
  * @param {{ bars: number, scan: number }} state
  */
@@ -110,7 +127,7 @@ function drawTrack(ctx, state) {
     const x = BAR_PADDING + i * pitch;
     const read = x <= scanX && state.scan > 0;
     const peak = value > 0.8 && read;
-    const color = peak ? PALETTE.accent : read ? PALETTE.text : PALETTE.textDim;
+    const color = barColor(read, peak);
     line(ctx, x, middle - half, x, middle + half, color, read ? 0.95 : 0.55, 2.2);
   });
   line(ctx, BAR_PADDING, middle, width - BAR_PADDING, middle, PALETTE.line, 1, 1);

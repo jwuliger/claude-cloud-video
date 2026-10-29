@@ -59,7 +59,17 @@ export function streamDuration(path, kind) {
   const selector = kind === 'audio' ? 'a:0' : 'v:0';
   const output = execFileSync(
     'ffprobe',
-    ['-v', 'error', '-select_streams', selector, '-show_entries', 'stream=duration', '-of', 'csv=p=0', path],
+    [
+      '-v',
+      'error',
+      '-select_streams',
+      selector,
+      '-show_entries',
+      'stream=duration',
+      '-of',
+      'csv=p=0',
+      path,
+    ],
     { encoding: 'utf8' },
   );
   return Number(output.trim());

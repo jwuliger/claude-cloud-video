@@ -27,9 +27,7 @@ const { values } = parseArgs({
 });
 
 const frameCount = totalFrames(VIDEO.duration, VIDEO.fps);
-const [firstFrame, endFrame] = values.range
-  ? values.range.split(':').map(Number)
-  : [0, frameCount];
+const [firstFrame, endFrame] = values.range ? values.range.split(':').map(Number) : [0, frameCount];
 const outDir = values.out ?? join(ROOT, 'build/frames');
 const workerCount = Number(values.workers);
 const scale = Number(values.scale);
@@ -67,7 +65,10 @@ let done = 0;
  * @param {number[]} frames Contiguous chunk, so each worker only ever seeks forward.
  */
 async function renderChunk(frames) {
-  const browser = await launchBrowser({ gpu: values.gpu, ...(values.angle ? { angle: values.angle } : {}) });
+  const browser = await launchBrowser({
+    gpu: values.gpu,
+    ...(values.angle ? { angle: values.angle } : {}),
+  });
   const page = await openFilm(browser, server.url, scale);
   for (const frame of frames) {
     const png = await captureFrame(page, frameToSeconds(frame, VIDEO.fps));
@@ -76,14 +77,18 @@ async function renderChunk(frames) {
     if (done % 60 === 0 || done === pending.length) {
       const elapsed = (Date.now() - startedAt) / 1000;
       const eta = (elapsed / done) * (pending.length - done);
-      process.stdout.write(`${done}/${pending.length} frames  ${elapsed.toFixed(0)}s elapsed  ~${eta.toFixed(0)}s left\n`);
+      process.stdout.write(
+        `${done}/${pending.length} frames  ${elapsed.toFixed(0)}s elapsed  ~${eta.toFixed(0)}s left\n`,
+      );
     }
   }
   await browser.close();
 }
 
 const chunkSize = Math.ceil(pending.length / workerCount);
-const chunks = Array.from({ length: workerCount }, (_, i) => pending.slice(i * chunkSize, (i + 1) * chunkSize));
+const chunks = Array.from({ length: workerCount }, (_, i) =>
+  pending.slice(i * chunkSize, (i + 1) * chunkSize),
+);
 await Promise.all(chunks.filter((chunk) => chunk.length > 0).map(renderChunk));
 await server.close();
 process.stdout.write(`Rendered ${pending.length} frames to ${outDir}\n`);

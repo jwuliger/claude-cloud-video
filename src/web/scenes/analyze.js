@@ -16,9 +16,14 @@ const SEED = 11;
 const REVEAL_SECONDS = 0.9;
 const HOT_SECONDS = 1.2;
 /** Relative weight of each sixteenth step in the rhythm lane: kick, snare and hat feel. */
-const STEP_WEIGHTS = [1, 0.25, 0.5, 0.25, 0.9, 0.25, 0.5, 0.25, 1, 0.25, 0.5, 0.25, 0.9, 0.25, 0.5, 0.45];
+const STEP_WEIGHTS = [
+  1, 0.25, 0.5, 0.25, 0.9, 0.25, 0.5, 0.25, 1, 0.25, 0.5, 0.25, 0.9, 0.25, 0.5, 0.45,
+];
 
-/** @param {number} index @returns {number} Top edge of a lane. */
+/**
+ * @param {number} index
+ * @returns {number} Top edge of a lane.
+ */
 const laneTop = (index) => LANE.top + index * (LANE.h + LANE.gap);
 
 /**
@@ -71,7 +76,12 @@ export function buildAnalyze(ctx) {
 
   tl.fromTo(frame, { lines: 0 }, { lines: 1, duration: 0.9, ease: EASE.out }, scene.start + 0.15);
   const firstAt = cue(cues, `lane.${lanes[0]?.id ?? 'beat'}`);
-  tl.fromTo(frame, { play: 0 }, { play: 1, duration: scene.end - 0.7 - firstAt, ease: EASE.linear }, firstAt);
+  tl.fromTo(
+    frame,
+    { play: 0 },
+    { play: 1, duration: scene.end - 0.7 - firstAt, ease: EASE.linear },
+    firstAt,
+  );
 
   lanes.forEach((lane, index) => {
     const at = cue(cues, `lane.${lane.id}`);
@@ -141,7 +151,11 @@ function stroke(ctx, color, width) {
 }
 
 /** Beat: a tick on every beat, taller on the downbeat. */
-function drawBeat(/** @type {CanvasRenderingContext2D} */ ctx, /** @type {number} */ t, /** @type {string} */ ink) {
+function drawBeat(
+  /** @type {CanvasRenderingContext2D} */ ctx,
+  /** @type {number} */ t,
+  /** @type {string} */ ink,
+) {
   for (let i = 0; i * BEAT_PITCH <= LANE.w; i += 1) {
     const strong = i % 4 === 0;
     const height = strong ? LANE.h * 0.72 : LANE.h * 0.42;
@@ -157,7 +171,11 @@ function drawBeat(/** @type {CanvasRenderingContext2D} */ ctx, /** @type {number
 }
 
 /** Rhythm: one dot per sixteenth note, sized by how hard that step hits. */
-function drawRhythm(/** @type {CanvasRenderingContext2D} */ ctx, /** @type {number} */ t, /** @type {string} */ ink) {
+function drawRhythm(
+  /** @type {CanvasRenderingContext2D} */ ctx,
+  /** @type {number} */ t,
+  /** @type {string} */ ink,
+) {
   const pitch = BEAT_PITCH / 4;
   ctx.fillStyle = ink;
   for (let i = 0; i * pitch < LANE.w; i += 1) {
@@ -172,7 +190,11 @@ function drawRhythm(/** @type {CanvasRenderingContext2D} */ ctx, /** @type {numb
 }
 
 /** Lows: a slow swell that surges on every beat. */
-function drawLows(/** @type {CanvasRenderingContext2D} */ ctx, /** @type {number} */ t, /** @type {string} */ ink) {
+function drawLows(
+  /** @type {CanvasRenderingContext2D} */ ctx,
+  /** @type {number} */ t,
+  /** @type {string} */ ink,
+) {
   /** @type {number[]} */
   const points = [];
   for (let x = 0; x <= LANE.w; x += 5) {
@@ -202,7 +224,11 @@ function drawLows(/** @type {CanvasRenderingContext2D} */ ctx, /** @type {number
 }
 
 /** Mids: dense vertical strokes that shimmer. */
-function drawMids(/** @type {CanvasRenderingContext2D} */ ctx, /** @type {number} */ t, /** @type {string} */ ink) {
+function drawMids(
+  /** @type {CanvasRenderingContext2D} */ ctx,
+  /** @type {number} */ t,
+  /** @type {string} */ ink,
+) {
   for (let i = 0; i * 9 < LANE.w; i += 1) {
     const level = 0.18 + 0.82 * Math.abs(noise1(i * 0.37 + t * 1.2, SEED + 3));
     const half = (LANE.h / 2 - 8) * level;
@@ -215,7 +241,11 @@ function drawMids(/** @type {CanvasRenderingContext2D} */ ctx, /** @type {number
 }
 
 /** Vocals: a melody contour in phrases, with a dot on every note. */
-function drawVocals(/** @type {CanvasRenderingContext2D} */ ctx, /** @type {number} */ t, /** @type {string} */ ink) {
+function drawVocals(
+  /** @type {CanvasRenderingContext2D} */ ctx,
+  /** @type {number} */ t,
+  /** @type {string} */ ink,
+) {
   for (const phrase of SHAPES.phrases) {
     const points = phrase.flatMap((note) => [note.x, LANE.h - 12 - note.level * (LANE.h - 24)]);
     polyline(ctx, points, ink, 1, 2);
@@ -230,7 +260,11 @@ function drawVocals(/** @type {CanvasRenderingContext2D} */ ctx, /** @type {numb
 }
 
 /** Instrumentals: sustained blocks in three rows. */
-function drawInstrumentals(/** @type {CanvasRenderingContext2D} */ ctx, /** @type {number} */ t, /** @type {string} */ ink) {
+function drawInstrumentals(
+  /** @type {CanvasRenderingContext2D} */ ctx,
+  /** @type {number} */ t,
+  /** @type {string} */ ink,
+) {
   ctx.fillStyle = ink;
   for (const block of SHAPES.blocks) {
     roundedRect(ctx, block.x, 10 + block.row * 21, block.width, 12, 6);

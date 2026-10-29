@@ -59,8 +59,8 @@ export function wordRow(parent, words, options = {}) {
   row.style.display = 'flex';
   row.style.justifyContent = 'center';
   row.style.columnGap = gap;
-  const inners = words.map((word, index) =>
-    maskedWord(row, word, accentIndexes.includes(index) ? 'accent' : '').inner,
+  const inners = words.map(
+    (word, index) => maskedWord(row, word, accentIndexes.includes(index) ? 'accent' : '').inner,
   );
   return { row, inners };
 }

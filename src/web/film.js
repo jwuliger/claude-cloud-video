@@ -30,7 +30,7 @@ import { buildUpload } from './scenes/upload.js';
 /**
  * Everything a scene needs to place its content on the master timeline.
  * @typedef {object} SceneContext
- * @property {import('gsap').core.Timeline} tl Master timeline. Add tweens at absolute seconds.
+ * @property {import('./motion.js').Timeline} tl Master timeline. Add tweens at absolute seconds.
  * @property {import('../config/video.config.js').SceneConfig} scene
  * @property {HTMLElement} root Scene container, hidden outside the scene window.
  * @property {Readonly<Record<string, number>>} cues Named moments in absolute seconds.
@@ -40,7 +40,7 @@ import { buildUpload } from './scenes/upload.js';
  */
 
 /** @type {Readonly<Record<string, (ctx: SceneContext) => void>>} */
-const SCENE_BUILDERS = Object.freeze({
+export const SCENE_BUILDERS = Object.freeze({
   hook: buildHook,
   problem: buildProblem,
   product: buildProduct,
@@ -83,7 +83,7 @@ export function buildFilm(stage) {
     const root = el('div', 'scene', scenesLayer);
     root.dataset['scene'] = scene.id;
     tl.set(root, { visibility: 'visible' }, Math.max(0, scene.start - VISIBLE_MARGIN));
-    tl.set(root, { visibility: 'hidden' }, scene.end + VISIBLE_MARGIN);
+    tl.set(root, { visibility: 'hidden' }, Math.min(scene.end + VISIBLE_MARGIN, VIDEO.duration));
     build({
       tl,
       scene,

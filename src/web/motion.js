@@ -28,12 +28,7 @@ export const DURATION = MOTION.duration;
  */
 export function riseIn(tl, targets, at, options = {}) {
   const { y = 28, x = 0, duration = DURATION.base, stagger = 0, ease = EASE.out } = options;
-  tl.fromTo(
-    targets,
-    { opacity: 0, y, x },
-    { opacity: 1, y: 0, x: 0, duration, stagger, ease },
-    at,
-  );
+  tl.fromTo(targets, { opacity: 0, y, x }, { opacity: 1, y: 0, x: 0, duration, stagger, ease }, at);
 }
 
 /**

@@ -40,7 +40,12 @@ export function buildGenre(ctx) {
     maskIn(tl, word.inner, cue(cues, 'genre.detects') + 0.1 + index * 0.08);
     return word.outer;
   });
-  tl.fromTo(indicator, { opacity: 0, y: rowY(0) - LIST.y + 8 }, { opacity: 1, duration: 0.3 }, cue(cues, 'genre.detects'));
+  tl.fromTo(
+    indicator,
+    { opacity: 0, y: rowY(0) - LIST.y + 8 },
+    { opacity: 1, duration: 0.3 },
+    cue(cues, 'genre.detects'),
+  );
 
   scanThenLock(tl, indicator, lock, rowY);
   hops.forEach((at, index) => {
@@ -90,7 +95,7 @@ export function buildGenre(ctx) {
 
 /**
  * The selection box hops through the genres quickly, then settles on the first one.
- * @param {import('gsap').core.Timeline} tl
+ * @param {import('../motion.js').Timeline} tl
  * @param {HTMLElement} indicator
  * @param {number} lock Time the first genre is locked in.
  * @param {(index: number) => number} rowY
@@ -99,6 +104,10 @@ function scanThenLock(tl, indicator, lock, rowY) {
   const order = [1, 2, 3, 0];
   order.forEach((index, step) => {
     const at = lock - SCAN_STEP * (order.length - step);
-    tl.to(indicator, { y: rowY(index) - LIST.y + 8, duration: SCAN_STEP * 0.8, ease: EASE.inOut }, at);
+    tl.to(
+      indicator,
+      { y: rowY(index) - LIST.y + 8, duration: SCAN_STEP * 0.8, ease: EASE.inOut },
+      at,
+    );
   });
 }

@@ -36,17 +36,32 @@ export function pathAt(z, seed) {
   };
 }
 
-/** @param {Vec3} a @param {Vec3} b @returns {Vec3} */
+/**
+ * @param {Vec3} a
+ * @param {Vec3} b
+ * @returns {Vec3}
+ */
 const sub = (a, b) => ({ x: a.x - b.x, y: a.y - b.y, z: a.z - b.z });
-/** @param {Vec3} a @param {Vec3} b @returns {number} */
+/**
+ * @param {Vec3} a
+ * @param {Vec3} b
+ * @returns {number}
+ */
 const dot = (a, b) => a.x * b.x + a.y * b.y + a.z * b.z;
-/** @param {Vec3} a @param {Vec3} b @returns {Vec3} */
+/**
+ * @param {Vec3} a
+ * @param {Vec3} b
+ * @returns {Vec3}
+ */
 const cross = (a, b) => ({
   x: a.y * b.z - a.z * b.y,
   y: a.z * b.x - a.x * b.z,
   z: a.x * b.y - a.y * b.x,
 });
-/** @param {Vec3} a @returns {Vec3} */
+/**
+ * @param {Vec3} a
+ * @returns {Vec3}
+ */
 function normalize(a) {
   const length = Math.hypot(a.x, a.y, a.z) || 1;
   return { x: a.x / length, y: a.y / length, z: a.z / length };
@@ -81,7 +96,11 @@ export function cameraAt(t, seed) {
  */
 function toCamera(camera, point) {
   const relative = sub(point, camera.position);
-  return { x: dot(relative, camera.right), y: dot(relative, camera.up), z: dot(relative, camera.forward) };
+  return {
+    x: dot(relative, camera.right),
+    y: dot(relative, camera.up),
+    z: dot(relative, camera.forward),
+  };
 }
 
 /**
@@ -113,7 +132,12 @@ function projectSegment(camera, a, b, cx, cy) {
   ];
 }
 
-/** @param {Vec3} a @param {Vec3} b @param {number} t @returns {Vec3} */
+/**
+ * @param {Vec3} a
+ * @param {Vec3} b
+ * @param {number} t
+ * @returns {Vec3}
+ */
 function lerpVec(a, b, t) {
   return { x: lerp(a.x, b.x, t), y: lerp(a.y, b.y, t), z: lerp(a.z, b.z, t) };
 }
@@ -127,116 +151,97 @@ function fog(depth) {
 }
 
 /**
+ * Binds a camera to a canvas so scene code can draw world-space lines in one call.
  * @param {CanvasRenderingContext2D} ctx
  * @param {Camera} camera
- * @param {Vec3} a
- * @param {Vec3} b
- * @param {number} cx
- * @param {number} cy
- * @param {string} color Hex colour.
- * @param {number} strength Peak opacity.
- * @param {number} width
+ * @param {{ x: number, y: number }} centre Screen centre in layout pixels.
+ * @returns {(a: Vec3, b: Vec3, style: { color: string, strength: number, width: number }) => void}
  */
-function worldLine(ctx, camera, a, b, cx, cy, color, strength, width) {
-  const projected = projectSegment(camera, a, b, cx, cy);
-  if (!projected) {
-    return;
-  }
-  const [x1, y1, x2, y2, depth] = projected;
-  ctx.beginPath();
-  ctx.moveTo(x1, y1);
-  ctx.lineTo(x2, y2);
-  ctx.lineWidth = width;
-  ctx.strokeStyle = rgba(color, strength * fog(depth));
-  ctx.stroke();
+function createView(ctx, camera, centre) {
+  return (a, b, style) => {
+    const projected = projectSegment(camera, a, b, centre.x, centre.y);
+    if (!projected) {
+      return;
+    }
+    const [x1, y1, x2, y2, depth] = projected;
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+    ctx.lineWidth = style.width;
+    ctx.strokeStyle = rgba(style.color, style.strength * fog(depth));
+    ctx.stroke();
+  };
 }
 
+/** @typedef {ReturnType<typeof createView>} View */
+
+const FLOOR_STYLE = { color: PALETTE.text, strength: 0.3, width: 1 };
+const PYLON_STYLE = { color: PALETTE.text, strength: 0.5, width: 1.2 };
+const GATE_STYLES = [
+  { color: PALETTE.accent, strength: 1, width: 1.6, scale: 1 },
+  { color: PALETTE.accent, strength: 0.4, width: 1, scale: 0.62 },
+];
+
 /**
- * @param {CanvasRenderingContext2D} ctx
+ * @param {View} view
  * @param {Camera} camera
- * @param {number} cx
- * @param {number} cy
  */
-function drawFloor(ctx, camera, cx, cy) {
+function drawFloor(view, camera) {
   const zStart = Math.floor(camera.position.z / GRID_STEP) * GRID_STEP;
   const zEnd = zStart + FAR;
   for (let x = -GRID_HALF_WIDTH; x <= GRID_HALF_WIDTH; x += GRID_STEP) {
+    // Split long lines into segments so distance fog varies along their length.
     for (let z = zStart; z < zEnd; z += GRID_STEP * 2) {
-      worldLine(ctx, camera, { x, y: 0, z }, { x, y: 0, z: z + GRID_STEP * 2 }, cx, cy, PALETTE.text, 0.3, 1);
+      view({ x, y: 0, z }, { x, y: 0, z: z + GRID_STEP * 2 }, FLOOR_STYLE);
     }
   }
   for (let z = zStart; z < zEnd; z += GRID_STEP) {
-    worldLine(
-      ctx,
-      camera,
-      { x: -GRID_HALF_WIDTH, y: 0, z },
-      { x: GRID_HALF_WIDTH, y: 0, z },
-      cx,
-      cy,
-      PALETTE.text,
-      0.3,
-      1,
-    );
+    view({ x: -GRID_HALF_WIDTH, y: 0, z }, { x: GRID_HALF_WIDTH, y: 0, z }, FLOOR_STYLE);
   }
 }
 
 /**
- * @param {CanvasRenderingContext2D} ctx
+ * @param {View} view
  * @param {Camera} camera
- * @param {number} cx
- * @param {number} cy
  * @param {number} seed
  */
-function drawGates(ctx, camera, cx, cy, seed) {
+function drawGates(view, camera, seed) {
   const first = Math.floor(camera.position.z / GATE_SPACING);
   for (let n = first; n < first + Math.ceil(FAR / GATE_SPACING) + 1; n += 1) {
     const z = n * GATE_SPACING;
     const centre = pathAt(z, seed);
-    for (const [radius, strength, width] of [
-      [GATE_RADIUS, 1, 1.6],
-      [GATE_RADIUS * 0.62, 0.4, 1],
-    ]) {
-      const points = [];
-      for (let k = 0; k <= RING_SEGMENTS; k += 1) {
-        const angle = (k / RING_SEGMENTS) * TAU;
-        points.push({
-          x: centre.x + Math.cos(angle) * (radius ?? 1),
-          y: centre.y + Math.sin(angle) * (radius ?? 1),
-          z,
-        });
-      }
+    for (const style of GATE_STYLES) {
+      const radius = GATE_RADIUS * style.scale;
       for (let k = 0; k < RING_SEGMENTS; k += 1) {
-        const a = points[k];
-        const b = points[k + 1];
-        if (a && b) {
-          worldLine(ctx, camera, a, b, cx, cy, PALETTE.accent, strength ?? 1, width ?? 1);
-        }
+        const from = (k / RING_SEGMENTS) * TAU;
+        const to = ((k + 1) / RING_SEGMENTS) * TAU;
+        view(
+          { x: centre.x + Math.cos(from) * radius, y: centre.y + Math.sin(from) * radius, z },
+          { x: centre.x + Math.cos(to) * radius, y: centre.y + Math.sin(to) * radius, z },
+          style,
+        );
       }
     }
   }
 }
 
 /**
- * @param {CanvasRenderingContext2D} ctx
+ * @param {View} view
  * @param {Camera} camera
- * @param {number} cx
- * @param {number} cy
  * @param {number} seed
  */
-function drawPylons(ctx, camera, cx, cy, seed) {
+function drawPylons(view, camera, seed) {
   const first = Math.floor(camera.position.z / 6);
   for (let n = first; n < first + Math.ceil(FAR / 6); n += 1) {
     for (const side of [-1, 1]) {
-      const roll = hash2(n, side, seed);
-      if (roll < 0.35) {
+      if (hash2(n, side, seed) < 0.35) {
         continue;
       }
       const z = n * 6 + hash2(n, 9, seed) * 4;
-      const centre = pathAt(z, seed);
-      const x = centre.x + side * (7 + hash2(n, 5, seed) * 11);
+      const x = pathAt(z, seed).x + side * (7 + hash2(n, 5, seed) * 11);
       const height = 1.5 + hash2(n, 7, seed) * 8;
-      worldLine(ctx, camera, { x, y: 0, z }, { x, y: height, z }, cx, cy, PALETTE.text, 0.5, 1.2);
-      worldLine(ctx, camera, { x: x - 0.5, y: height, z }, { x: x + 0.5, y: height, z }, cx, cy, PALETTE.text, 0.5, 1.2);
+      view({ x, y: 0, z }, { x, y: height, z }, PYLON_STYLE);
+      view({ x: x - 0.5, y: height, z }, { x: x + 0.5, y: height, z }, PYLON_STYLE);
     }
   }
 }
@@ -249,11 +254,10 @@ function drawPylons(ctx, camera, cx, cy, seed) {
 export function drawFlight(ctx, t, options) {
   const { width, height, seed } = options;
   const camera = cameraAt(t, seed);
-  const cx = width / 2;
-  const cy = height * 0.5;
-  drawFloor(ctx, camera, cx, cy);
-  drawPylons(ctx, camera, cx, cy, seed);
-  drawGates(ctx, camera, cx, cy, seed);
+  const view = createView(ctx, camera, { x: width / 2, y: height * 0.5 });
+  drawFloor(view, camera);
+  drawPylons(view, camera, seed);
+  drawGates(view, camera, seed);
 }
 
 /**
@@ -272,7 +276,10 @@ export function drawPathMap(ctx, t, width, height, seed) {
   const points = [];
   for (let z = from; z <= to; z += 2) {
     const p = pathAt(z, seed);
-    points.push(width / 2 + p.x * (width / 26), height - 18 - ((z - from) / (to - from)) * (height - 72));
+    points.push(
+      width / 2 + p.x * (width / 26),
+      height - 18 - ((z - from) / (to - from)) * (height - 72),
+    );
   }
   polyline(ctx, points, PALETTE.textDim, 0.9, 1.2);
   const mark = pathAt(here, seed);

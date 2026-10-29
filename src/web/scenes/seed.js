@@ -67,10 +67,18 @@ export function buildSeed(ctx) {
     const at = cue(cues, 'seed.land') - 0.25 + index * 0.14;
     riseIn(tl, [card, caption], at, { y: 26, duration: DURATION.base });
     tl.to(card, { borderColor: PALETTE.accent, duration: 0.12 }, alike + index * 0.17);
-    tl.to(card, { borderColor: PALETTE.lineStrong, duration: 0.5, ease: EASE.inOut }, alike + index * 0.17 + 0.3);
+    tl.to(
+      card,
+      { borderColor: PALETTE.lineStrong, duration: 0.5, ease: EASE.inOut },
+      alike + index * 0.17 + 0.3,
+    );
   });
 
-  leave(tl, [label, odometer.row, ...tiles.flatMap(({ card, caption }) => [card, caption])], scene.end - 0.4);
+  leave(
+    tl,
+    [label, odometer.row, ...tiles.flatMap(({ card, caption }) => [card, caption])],
+    scene.end - 0.4,
+  );
 }
 
 /**
@@ -91,7 +99,10 @@ function buildOdometer(parent, digits) {
     slot.style.height = '1.08em';
     slot.style.width = '0.62em';
     slot.style.textAlign = 'center';
-    slot.style.setProperty('mask-image', 'linear-gradient(transparent, #000 22%, #000 78%, transparent)');
+    slot.style.setProperty(
+      'mask-image',
+      'linear-gradient(transparent, #000 22%, #000 78%, transparent)',
+    );
     if (GROUP_AFTER.includes(index - 1)) {
       slot.style.marginLeft = '0.3em';
     }

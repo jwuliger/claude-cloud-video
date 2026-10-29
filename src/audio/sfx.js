@@ -136,7 +136,11 @@ const thud = /** @type {SoundMaker} */ (_event, sampleRate, seed) => {
 /** Rounded UI pop: a quick upward glide. */
 const pop = /** @type {SoundMaker} */ (_event, sampleRate) => {
   const length = frames(0.16, sampleRate);
-  const tone = sine(length, (i) => 640 + 520 * (1 - Math.exp(-i / (0.02 * sampleRate))), sampleRate);
+  const tone = sine(
+    length,
+    (i) => 640 + 520 * (1 - Math.exp(-i / (0.02 * sampleRate))),
+    sampleRate,
+  );
   shape(tone, decayEnvelope(length, 0.04, sampleRate, 0.004));
   return normalize(tone);
 };
@@ -170,6 +174,9 @@ const SOUNDS = Object.freeze({
   chime: { make: chime, reverb: 0.6 },
 });
 
+/** Names accepted in the config's `sound` field. */
+export const SOUND_NAMES = Object.freeze(Object.keys(SOUNDS));
+
 /**
  * @param {import('./sfx-plan.js').TimedSfx[]} plan
  * @param {{ sampleRate: number, duration: number }} options
@@ -190,7 +197,12 @@ export function renderSfx(plan, options) {
     addMono(dry, clip, time * sampleRate, gain, event.pan ?? 0);
     addMono(send, clip, time * sampleRate, gain * sound.reverb, event.pan ?? 0);
   });
-  const wet = reverb(send, { sampleRate, rt60: AUDIO.musicReverb.rt60 * 0.7, damping: 0.45, preDelay: 0.015 });
+  const wet = reverb(send, {
+    sampleRate,
+    rt60: AUDIO.musicReverb.rt60 * 0.7,
+    damping: 0.45,
+    preDelay: 0.015,
+  });
   addStereo(dry, wet);
   return dry;
 }

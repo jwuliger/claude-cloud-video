@@ -52,7 +52,10 @@ export function buildQuality(ctx) {
   const chips = COPY.quality.chips.map((text, index) => {
     const chip = el('div', 'chip strong', row, text);
     chip.style.position = 'relative';
-    riseIn(tl, chip, cue(cues, claimCues[index] ?? 'quality.premium'), { y: 18, duration: DURATION.short });
+    riseIn(tl, chip, cue(cues, claimCues[index] ?? 'quality.premium'), {
+      y: 18,
+      duration: DURATION.short,
+    });
     return chip;
   });
 

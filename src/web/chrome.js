@@ -6,7 +6,7 @@ import { el, place } from './dom.js';
 import { DURATION, EASE } from './motion.js';
 
 /**
- * @param {import('gsap').core.Timeline} tl
+ * @param {import('./motion.js').Timeline} tl
  * @param {HTMLElement} stage
  * @param {Readonly<Record<string, number>>} cues
  */
@@ -39,7 +39,11 @@ export function buildChrome(tl, stage, cues) {
     { opacity: 1, duration: DURATION.base, stagger: 0.08, ease: EASE.out },
     cue(cues, 'chrome.in'),
   );
-  tl.to(brandItems, { opacity: 0, duration: DURATION.short, ease: EASE.in }, cue(cues, 'chrome.out'));
+  tl.to(
+    brandItems,
+    { opacity: 0, duration: DURATION.short, ease: EASE.in },
+    cue(cues, 'chrome.out'),
+  );
   tl.fromTo(
     note,
     { opacity: 0 },

@@ -35,11 +35,24 @@ export function renderVoice(clips, options) {
   filterInPlace(dry, 'lowpass', eq.lowpassHz, sampleRate);
 
   const level = { l: Float32Array.from(dry), r: Float32Array.from(dry) };
-  compress(level, { sampleRate, thresholdDb: -24, ratio: 2.6, attack: 0.006, release: 0.09, makeupDb: 3 });
+  compress(level, {
+    sampleRate,
+    thresholdDb: -24,
+    ratio: 2.6,
+    attack: 0.006,
+    release: 0.09,
+    makeupDb: 3,
+  });
   const processed = level.l;
 
   const send = createStereo(total);
   addMono(send, processed, 0, dbToGain(AUDIO.voiceRoom.wetDb), 0);
-  const wet = reverb(send, { sampleRate, rt60: AUDIO.voiceRoom.rt60, damping: 0.55, preDelay: 0.012, size: 0.8 });
+  const wet = reverb(send, {
+    sampleRate,
+    rt60: AUDIO.voiceRoom.rt60,
+    damping: 0.55,
+    preDelay: 0.012,
+    size: 0.8,
+  });
   return { dry: processed, wet };
 }

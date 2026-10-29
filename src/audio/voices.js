@@ -148,12 +148,15 @@ export function bell(v) {
 export function padNote(v) {
   const { sampleRate, hz, duration, attack, release, brightness = 1 } = v;
   const length = frames(duration, sampleRate);
-  const voices = [0.9946, 1, 1.0055].map((ratio, index) => saw(length, hz * ratio, sampleRate, index * 0.31));
+  const voices = [0.9946, 1, 1.0055].map((ratio, index) =>
+    saw(length, hz * ratio, sampleRate, index * 0.31),
+  );
   const low = triangle(length, hz / 2, sampleRate);
   const mix = new Float32Array(length);
   for (let i = 0; i < length; i += 1) {
     mix[i] =
-      ((voices[0]?.[i] ?? 0) + (voices[1]?.[i] ?? 0) + (voices[2]?.[i] ?? 0)) * 0.2 + (low[i] ?? 0) * 0.16;
+      ((voices[0]?.[i] ?? 0) + (voices[1]?.[i] ?? 0) + (voices[2]?.[i] ?? 0)) * 0.2 +
+      (low[i] ?? 0) * 0.16;
   }
   const filtered = sweepLowpass(
     mix,
@@ -177,7 +180,9 @@ export function bass(v) {
   const second = sine(length, hz * 2, sampleRate);
   const third = sine(length, hz * 3, sampleRate);
   for (let i = 0; i < length; i += 1) {
-    out[i] = Math.tanh(((fundamental[i] ?? 0) + (second[i] ?? 0) * 0.28 + (third[i] ?? 0) * 0.08) * 1.3) * 0.8;
+    out[i] =
+      Math.tanh(((fundamental[i] ?? 0) + (second[i] ?? 0) * 0.28 + (third[i] ?? 0) * 0.08) * 1.3) *
+      0.8;
   }
   const attack = frames(0.006, sampleRate);
   const release = frames(Math.min(0.09, duration * 0.4), sampleRate);

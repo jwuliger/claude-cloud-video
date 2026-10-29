@@ -27,7 +27,7 @@ function setActive(node, active) {
 
 /**
  * Move the selection highlight within a group at a given time.
- * @param {import('gsap').core.Timeline} tl
+ * @param {import('../motion.js').Timeline} tl
  * @param {readonly HTMLElement[]} nodes
  * @param {number} active Index to select.
  * @param {number} at
@@ -50,7 +50,7 @@ function select(tl, nodes, active, at) {
 
 /**
  * Crossfade between stacked variants so exactly one is visible after each switch.
- * @param {import('gsap').core.Timeline} tl
+ * @param {import('../motion.js').Timeline} tl
  * @param {{ alpha: number }[]} weights
  * @param {number} active
  * @param {number} at
@@ -98,7 +98,10 @@ export function buildChoose(ctx) {
     return row;
   });
 
-  /** @param {readonly string[]} items @param {number} y */
+  /**
+   * @param {readonly string[]} items
+   * @param {number} y
+   */
   const chipRow = (items, y) => {
     const holder = el('div', 'abs', root);
     place(holder, { x: ROW.x, y });
@@ -120,7 +123,8 @@ export function buildChoose(ctx) {
   const preview = canvasCard(ctx, {
     parent: root,
     box: PREVIEW,
-    draw: (c, t, w, h) => drawPreview(c, t, w, h, { looks, grounds, kicks, names: experience.looks }),
+    draw: (c, t, w, h) =>
+      drawPreview(c, t, w, h, { looks, grounds, kicks, names: experience.looks }),
   });
   riseIn(tl, preview, entrance + 0.1, { y: 24, duration: DURATION.base });
 
@@ -136,7 +140,12 @@ export function buildChoose(ctx) {
     if (index === 0) {
       return;
     }
-    tl.fromTo(node, { opacity: 0 }, { opacity: 1, duration: 0.3 }, capAt + 0.12 + (index - 1) * 0.43);
+    tl.fromTo(
+      node,
+      { opacity: 0 },
+      { opacity: 1, duration: 0.3 },
+      capAt + 0.12 + (index - 1) * 0.43,
+    );
   });
   tl.to(sample[0] ?? preview, { opacity: 0, duration: 0.3 }, capAt + 0.12);
   tl.to(sample[1] ?? preview, { opacity: 0, duration: 0.3 }, capAt + 0.55);
@@ -173,11 +182,19 @@ function styleCaption(node, variant) {
 }
 
 /**
+ * @typedef {object} PreviewState
+ * @property {{ alpha: number }[]} looks Weight of each look.
+ * @property {{ alpha: number }[]} grounds Weight of each backdrop.
+ * @property {readonly number[]} kicks
+ * @property {readonly string[]} names Look names, in the same order as `looks`.
+ */
+
+/**
  * @param {CanvasRenderingContext2D} c
  * @param {number} t
  * @param {number} w
  * @param {number} h
- * @param {{ looks: { alpha: number }[], grounds: { alpha: number }[], kicks: readonly number[], names: readonly string[] }} state
+ * @param {PreviewState} state
  */
 function drawPreview(c, t, w, h, state) {
   const [, grid, glow] = state.grounds.map((ground) => ground.alpha);

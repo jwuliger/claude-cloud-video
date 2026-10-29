@@ -72,7 +72,16 @@ function master(input, output) {
   const second =
     `${base}:measured_I=${m.input_i}:measured_TP=${m.input_tp}:measured_LRA=${m.input_lra}` +
     `:measured_thresh=${m.input_thresh}:offset=${m.target_offset}:linear=true`;
-  ffmpegStderr(['-y', '-i', input, '-af', `${second},aresample=${AUDIO.sampleRate}`, '-c:a', 'pcm_s24le', output]);
+  ffmpegStderr([
+    '-y',
+    '-i',
+    input,
+    '-af',
+    `${second},aresample=${AUDIO.sampleRate}`,
+    '-c:a',
+    'pcm_s24le',
+    output,
+  ]);
 }
 
 /**
@@ -114,7 +123,14 @@ export function buildAudio(options = {}) {
     music: AUDIO.loudness.music - musicLufs,
     sfx: 0,
   };
-  const premaster = mixdown({ sampleRate, voice: stems.voice, voiceRoom: voice.wet, music, sfx, gainDb });
+  const premaster = mixdown({
+    sampleRate,
+    voice: stems.voice,
+    voiceRoom: voice.wet,
+    music,
+    sfx,
+    gainDb,
+  });
   const premasterPath = join(AUDIO_DIR, 'premaster.wav');
   writeStereoWav(premasterPath, premaster, sampleRate);
   master(premasterPath, MASTER_PATH);

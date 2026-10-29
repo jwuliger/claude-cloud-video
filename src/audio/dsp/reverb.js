@@ -64,8 +64,66 @@ function diffuse(signal) {
  * @property {number} [damping] 0-1: how fast high frequencies die in the tail.
  * @property {number} [preDelay] Seconds.
  * @property {number} [size] Scales the delay lengths.
- * @property {number} [tail] Extra seconds of silence appended so the tail can ring out.
  */
+
+/**
+ * Read a delay line at a fractional position, interpolating between neighbours.
+ * @param {Float32Array} buffer Circular buffer.
+ * @param {number} position Absolute (unwrapped) read position.
+ * @returns {number}
+ */
+function readFractional(buffer, position) {
+  const span = buffer.length;
+  const base = Math.floor(position);
+  const fraction = position - base;
+  const a = buffer[((base % span) + span) % span] ?? 0;
+  const b = buffer[(((base + 1) % span) + span) % span] ?? 0;
+  return a + (b - a) * fraction;
+}
+
+/**
+ * The delay lines and their per-line feedback gain for a target decay time.
+ * @param {number} sampleRate
+ * @param {number} rt60
+ * @param {number} size
+ */
+function createNetwork(sampleRate, rt60, size) {
+  const scale = (sampleRate / 48000) * size;
+  const lengths = BASE_LENGTHS.map((length) => Math.round(length * scale));
+  return {
+    lengths,
+    buffers: lengths.map((length) => new Float32Array(length + MARGIN * 2)),
+    feedback: lengths.map((length) => 10 ** ((-3 * length) / (rt60 * sampleRate))),
+  };
+}
+
+/**
+ * One delay line's output at sample `i`, with a slow wobble that stops metallic ringing.
+ * @param {ReturnType<typeof createNetwork>} network
+ * @param {number} line
+ * @param {number} i
+ * @param {number} sampleRate
+ * @returns {number}
+ */
+function readLine(network, line, i, sampleRate) {
+  const wobble = 1.6 * Math.sin((2 * Math.PI * MOD_RATES_HZ[line] * i) / sampleRate + line);
+  return readFractional(network.buffers[line], i - (network.lengths[line] + MARGIN + wobble));
+}
+
+/**
+ * Sum the line outputs into a left and right sample with different sign patterns.
+ * @param {Float64Array} outputs
+ * @returns {[number, number]}
+ */
+function mixToStereo(outputs) {
+  let left = 0;
+  let right = 0;
+  for (let line = 0; line < LINES; line += 1) {
+    left += outputs[line] * LEFT_SIGNS[line];
+    right += outputs[line] * RIGHT_SIGNS[line];
+  }
+  return [left * OUTPUT_GAIN, right * OUTPUT_GAIN];
+}
 
 /**
  * Process a send bus and return only the wet signal.
@@ -77,49 +135,28 @@ export function reverb(input, options) {
   const { sampleRate, rt60 = 2.6, damping = 0.35, preDelay = 0.02, size = 1 } = options;
   const frames = input.l.length;
   const wet = createStereo(frames);
-  const scale = (sampleRate / 48000) * size;
-  const lengths = BASE_LENGTHS.map((length) => Math.round(length * scale));
-  const buffers = lengths.map((length) => new Float32Array(length + MARGIN * 2));
-  const feedback = lengths.map((length) => 10 ** ((-3 * length) / (rt60 * sampleRate)));
+  const network = createNetwork(sampleRate, rt60, size);
   const lowpass = new Float64Array(LINES);
   const outputs = new Float64Array(LINES);
   const preFrames = Math.round(preDelay * sampleRate);
 
   const mono = new Float32Array(frames);
-  for (let i = 0; i < frames; i += 1) {
-    const source = i - preFrames;
-    mono[i] = source >= 0 ? ((input.l[source] ?? 0) + (input.r[source] ?? 0)) * 0.5 : 0;
+  for (let i = preFrames; i < frames; i += 1) {
+    mono[i] = ((input.l[i - preFrames] ?? 0) + (input.r[i - preFrames] ?? 0)) * 0.5;
   }
   const diffused = diffuse(mono);
 
   for (let i = 0; i < frames; i += 1) {
     for (let line = 0; line < LINES; line += 1) {
-      const buffer = buffers[line] ?? new Float32Array(1);
-      const length = lengths[line] ?? 1;
-      const modulation = 1.6 * Math.sin((2 * Math.PI * (MOD_RATES_HZ[line] ?? 0.2) * i) / sampleRate + line);
-      const readAt = i - (length + MARGIN + modulation);
-      const base = Math.floor(readAt);
-      const fraction = readAt - base;
-      const span = buffer.length;
-      const a = buffer[((base % span) + span) % span] ?? 0;
-      const b = buffer[(((base + 1) % span) + span) % span] ?? 0;
-      const delayed = a + (b - a) * fraction;
-      lowpass[line] = (1 - damping) * delayed + damping * (lowpass[line] ?? 0);
-      outputs[line] = (lowpass[line] ?? 0) * (feedback[line] ?? 0.9);
+      lowpass[line] =
+        (1 - damping) * readLine(network, line, i, sampleRate) + damping * lowpass[line];
+      outputs[line] = lowpass[line] * network.feedback[line];
     }
-    let left = 0;
-    let right = 0;
-    for (let line = 0; line < LINES; line += 1) {
-      left += (outputs[line] ?? 0) * (LEFT_SIGNS[line] ?? 1);
-      right += (outputs[line] ?? 0) * (RIGHT_SIGNS[line] ?? 1);
-    }
-    wet.l[i] = left * OUTPUT_GAIN;
-    wet.r[i] = right * OUTPUT_GAIN;
+    [wet.l[i], wet.r[i]] = mixToStereo(outputs);
     hadamard8(outputs);
-    const x = diffused[i] ?? 0;
     for (let line = 0; line < LINES; line += 1) {
-      const buffer = buffers[line] ?? new Float32Array(1);
-      buffer[i % buffer.length] = (outputs[line] ?? 0) + x * 0.35;
+      const buffer = network.buffers[line];
+      buffer[i % buffer.length] = outputs[line] + diffused[i] * 0.35;
     }
   }
   return wet;

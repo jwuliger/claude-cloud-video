@@ -1,6 +1,7 @@
 /** Browser entry. Boots the film and exposes a single `film.seek(seconds)` for the renderer. */
 
 import { VIDEO } from '../config/video.config.js';
+import { attachAudioClock } from './clock.js';
 import { buildFilm } from './film.js';
 import { applyTokens, loadFont } from './tokens.js';
 
@@ -18,7 +19,10 @@ function getStage() {
  * @param {HTMLElement} stage
  */
 function fitToWindow(stage) {
-  const scale = Math.min(window.innerWidth / VIDEO.layoutWidth, window.innerHeight / VIDEO.layoutHeight);
+  const scale = Math.min(
+    window.innerWidth / VIDEO.layoutWidth,
+    window.innerHeight / VIDEO.layoutHeight,
+  );
   stage.style.transform = `scale(${scale})`;
 }
 
@@ -32,6 +36,7 @@ async function boot() {
   if (new URLSearchParams(location.search).has('preview')) {
     fitToWindow(stage);
     window.addEventListener('resize', () => fitToWindow(stage));
+    attachAudioClock(film, '/build/audio/master.wav');
   }
   document.documentElement.dataset['ready'] = 'true';
 }

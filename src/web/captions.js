@@ -15,7 +15,7 @@ const MIN_FADE_OUT = 0.12;
 const GAP = 0.04;
 
 /**
- * @param {import('gsap').core.Timeline} tl
+ * @param {import('./motion.js').Timeline} tl
  * @param {HTMLElement} stage
  * @param {readonly import('../core/voiceover.js').ResolvedLine[]} lines
  */
@@ -43,7 +43,11 @@ export function buildCaptions(tl, stage, lines) {
       showAt,
     );
     chunk.words.forEach((word, i) => {
-      tl.to(wordNodes[i] ?? node, { color: PALETTE.text, duration: 0.16, ease: EASE.out }, word.start);
+      tl.to(
+        wordNodes[i] ?? node,
+        { color: PALETTE.text, duration: 0.16, ease: EASE.out },
+        word.start,
+      );
     });
     tl.to(node, { opacity: 0, duration: fade, ease: EASE.out }, hideAt);
   });

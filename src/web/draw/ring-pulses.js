@@ -27,7 +27,16 @@ const RINGS_ALIVE = 3;
  * @param {RingOptions} options
  */
 export function drawRingPulses(ctx, t, kicks, options) {
-  const { x, y, startRadius, endRadius, life, strength = 1, from = -Infinity, to = Infinity } = options;
+  const {
+    x,
+    y,
+    startRadius,
+    endRadius,
+    life,
+    strength = 1,
+    from = -Infinity,
+    to = Infinity,
+  } = options;
   const latest = lastHitIndex(kicks, t);
   for (let index = latest; index > latest - RINGS_ALIVE && index >= 0; index -= 1) {
     const hit = kicks[index] ?? 0;
