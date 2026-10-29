@@ -1,0 +1,190 @@
+/* Colours, sizes and the font name come from the config as CSS variables (see tokens.js). */
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  background: var(--bg);
+}
+
+#stage {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: var(--layout-width);
+  height: var(--layout-height);
+  overflow: hidden;
+  transform-origin: 0 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font), sans-serif;
+  font-weight: var(--weight-regular);
+  text-rendering: geometricPrecision;
+  -webkit-font-smoothing: antialiased;
+  font-kerning: normal;
+  font-variant-numeric: tabular-nums;
+}
+
+.layer,
+.scene {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.scene {
+  visibility: hidden;
+}
+
+.abs {
+  position: absolute;
+}
+
+canvas.abs {
+  display: block;
+}
+
+.display {
+  font-size: var(--size-display);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--tracking-display);
+  line-height: 1.04;
+}
+
+.headline {
+  font-size: var(--size-headline);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--tracking-headline);
+  line-height: 1.08;
+}
+
+.title {
+  font-size: var(--size-title);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--tracking-headline);
+  line-height: 1.12;
+}
+
+.body {
+  font-size: var(--size-body);
+  font-weight: var(--weight-regular);
+  line-height: 1.35;
+  color: var(--text-mid);
+}
+
+.label {
+  z-index: 2;
+  font-size: var(--size-label);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+
+.nowrap {
+  white-space: nowrap;
+}
+
+.accent {
+  color: var(--accent);
+}
+
+.dim {
+  color: var(--text-dim);
+}
+
+.mid {
+  color: var(--text-mid);
+}
+
+/* Text reveal: each word sits in a mask and slides up from below. */
+.mask {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: top;
+  padding: 0.08em 0.04em 0.16em;
+  margin: -0.08em -0.04em -0.16em;
+}
+
+.mask > .inner {
+  display: inline-block;
+}
+
+.hairline {
+  position: absolute;
+  background: var(--line-strong);
+}
+
+.dot {
+  position: absolute;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+.ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 1px solid var(--accent);
+  box-sizing: border-box;
+}
+
+.card {
+  position: absolute;
+  box-sizing: border-box;
+  border: 1px solid var(--line-strong);
+  border-radius: 16px;
+  background: var(--surface);
+  overflow: hidden;
+}
+
+.chip {
+  position: absolute;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 46px;
+  padding: 0 22px;
+  border: 1px solid var(--line-strong);
+  border-radius: 23px;
+  font-size: 19px;
+  font-weight: var(--weight-medium);
+  color: var(--text-mid);
+  white-space: nowrap;
+}
+
+.captions {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  bottom: var(--caption-bottom);
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.caption {
+  position: absolute;
+  bottom: 0;
+  width: 1100px;
+  text-align: center;
+  font-size: var(--size-caption);
+  font-weight: var(--weight-regular);
+  line-height: 1.32;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+  opacity: 0;
+}
+
+.caption .w {
+  color: var(--text-dim);
+}
+
+.strong {
+  color: var(--text);
+  font-weight: var(--weight-medium);
+}

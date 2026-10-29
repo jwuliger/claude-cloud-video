@@ -1,0 +1,28 @@
+{
+  "name": "live-motion-labs-launch-video",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Procedural GSAP launch film for livemotionlabs.com",
+  "type": "module",
+  "license": "MIT",
+  "engines": {
+    "node": ">=22"
+  },
+  "dependencies": {
+    "gsap": "3.15.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "@types/node": "22.20.5",
+    "@types/pngjs": "6.0.5",
+    "eslint": "10.13.0",
+    "eslint-config-prettier": "10.1.8",
+    "eslint-plugin-jsdoc": "65.4.2",
+    "globals": "17.13.0",
+    "playwright-core": "1.63.0",
+    "pngjs": "7.0.0",
+    "prettier": "3.9.10",
+    "typescript": "7.0.2",
+    "vitest": "5.0.5"
+  }
+}

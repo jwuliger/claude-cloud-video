@@ -1,0 +1,775 @@
+{
+  "voice": "af_heart",
+  "speed": 1,
+  "sampleRate": 24000,
+  "lines": {
+    "hook": {
+      "speak": "Every song has a pulse.",
+      "file": "hook.wav",
+      "duration": 1.557,
+      "words": [
+        {
+          "text": "Every",
+          "start": 0.073,
+          "end": 0.323
+        },
+        {
+          "text": "song",
+          "start": 0.398,
+          "end": 0.648
+        },
+        {
+          "text": "has",
+          "start": 0.698,
+          "end": 0.823
+        },
+        {
+          "text": "a",
+          "start": 0.848,
+          "end": 0.873
+        },
+        {
+          "text": "pulse.",
+          "start": 0.923,
+          "end": 1.387
+        }
+      ]
+    },
+    "problem": {
+      "speak": "Most music videos are slow to make, and rarely follow the beat.",
+      "file": "problem.wav",
+      "duration": 3.679,
+      "words": [
+        {
+          "text": "Most",
+          "start": 0.098,
+          "end": 0.373
+        },
+        {
+          "text": "music",
+          "start": 0.423,
+          "end": 0.673
+        },
+        {
+          "text": "videos",
+          "start": 0.698,
+          "end": 0.998
+        },
+        {
+          "text": "are",
+          "start": 1.023,
+          "end": 1.123
+        },
+        {
+          "text": "slow",
+          "start": 1.198,
+          "end": 1.448
+        },
+        {
+          "text": "to",
+          "start": 1.498,
+          "end": 1.548
+        },
+        {
+          "text": "make,",
+          "start": 1.573,
+          "end": 2.048
+        },
+        {
+          "text": "and",
+          "start": 2.173,
+          "end": 2.248
+        },
+        {
+          "text": "rarely",
+          "start": 2.323,
+          "end": 2.648
+        },
+        {
+          "text": "follow",
+          "start": 2.723,
+          "end": 3.023
+        },
+        {
+          "text": "the",
+          "start": 3.048,
+          "end": 3.098
+        },
+        {
+          "text": "beat.",
+          "start": 3.148,
+          "end": 3.499
+        }
+      ]
+    },
+    "product": {
+      "speak": "Live Motion Labs turns your song into a music video.",
+      "file": "product.wav",
+      "duration": 3.423,
+      "words": [
+        {
+          "text": "Live",
+          "start": 0.098,
+          "end": 0.373
+        },
+        {
+          "text": "Motion",
+          "start": 0.423,
+          "end": 0.798
+        },
+        {
+          "text": "Labs",
+          "start": 0.848,
+          "end": 1.423
+        },
+        {
+          "text": "turns",
+          "start": 1.523,
+          "end": 1.773
+        },
+        {
+          "text": "your",
+          "start": 1.798,
+          "end": 1.873
+        },
+        {
+          "text": "song",
+          "start": 1.948,
+          "end": 2.173
+        },
+        {
+          "text": "into",
+          "start": 2.198,
+          "end": 2.373
+        },
+        {
+          "text": "a",
+          "start": 2.398,
+          "end": 2.423
+        },
+        {
+          "text": "music",
+          "start": 2.473,
+          "end": 2.773
+        },
+        {
+          "text": "video.",
+          "start": 2.823,
+          "end": 3.243
+        }
+      ]
+    },
+    "engines": {
+      "speak": "Hand-written animation engines. Rules and math, not generative AI video.",
+      "file": "engines.wav",
+      "duration": 5.226,
+      "words": [
+        {
+          "text": "Hand-written",
+          "start": 0.094,
+          "end": 0.569
+        },
+        {
+          "text": "animation",
+          "start": 0.619,
+          "end": 1.119
+        },
+        {
+          "text": "engines.",
+          "start": 1.169,
+          "end": 1.994
+        },
+        {
+          "text": "Rules",
+          "start": 2.194,
+          "end": 2.644
+        },
+        {
+          "text": "and",
+          "start": 2.694,
+          "end": 2.769
+        },
+        {
+          "text": "math,",
+          "start": 2.819,
+          "end": 3.294
+        },
+        {
+          "text": "not",
+          "start": 3.419,
+          "end": 3.619
+        },
+        {
+          "text": "generative",
+          "start": 3.669,
+          "end": 4.144
+        },
+        {
+          "text": "AI",
+          "start": 4.219,
+          "end": 4.594
+        },
+        {
+          "text": "video.",
+          "start": 4.644,
+          "end": 5.056
+        }
+      ]
+    },
+    "upload": {
+      "speak": "Upload a song. The engine reads the whole track ahead of time.",
+      "file": "upload.wav",
+      "duration": 3.615,
+      "words": [
+        {
+          "text": "Upload",
+          "start": 0.073,
+          "end": 0.373
+        },
+        {
+          "text": "a",
+          "start": 0.398,
+          "end": 0.423
+        },
+        {
+          "text": "song.",
+          "start": 0.498,
+          "end": 1.073
+        },
+        {
+          "text": "The",
+          "start": 1.223,
+          "end": 1.323
+        },
+        {
+          "text": "engine",
+          "start": 1.373,
+          "end": 1.748
+        },
+        {
+          "text": "reads",
+          "start": 1.798,
+          "end": 2.048
+        },
+        {
+          "text": "the",
+          "start": 2.073,
+          "end": 2.123
+        },
+        {
+          "text": "whole",
+          "start": 2.173,
+          "end": 2.373
+        },
+        {
+          "text": "track",
+          "start": 2.423,
+          "end": 2.698
+        },
+        {
+          "text": "ahead",
+          "start": 2.723,
+          "end": 2.898
+        },
+        {
+          "text": "of",
+          "start": 2.923,
+          "end": 2.973
+        },
+        {
+          "text": "time.",
+          "start": 3.023,
+          "end": 3.435
+        }
+      ]
+    },
+    "analyze": {
+      "speak": "It finds the beat, the rhythm, the lows, the mids, the vocals, and the instrumentals.",
+      "file": "analyze.wav",
+      "duration": 4.998,
+      "words": [
+        {
+          "text": "It",
+          "start": 0.073,
+          "end": 0.173
+        },
+        {
+          "text": "finds",
+          "start": 0.223,
+          "end": 0.523
+        },
+        {
+          "text": "the",
+          "start": 0.548,
+          "end": 0.598
+        },
+        {
+          "text": "beat,",
+          "start": 0.648,
+          "end": 1.098
+        },
+        {
+          "text": "the",
+          "start": 1.223,
+          "end": 1.298
+        },
+        {
+          "text": "rhythm,",
+          "start": 1.348,
+          "end": 1.698
+        },
+        {
+          "text": "the",
+          "start": 1.853,
+          "end": 1.928
+        },
+        {
+          "text": "lows,",
+          "start": 1.978,
+          "end": 2.378
+        },
+        {
+          "text": "the",
+          "start": 2.523,
+          "end": 2.573
+        },
+        {
+          "text": "mids,",
+          "start": 2.623,
+          "end": 3.048
+        },
+        {
+          "text": "the",
+          "start": 3.148,
+          "end": 3.198
+        },
+        {
+          "text": "vocals,",
+          "start": 3.248,
+          "end": 3.773
+        },
+        {
+          "text": "and",
+          "start": 3.908,
+          "end": 3.983
+        },
+        {
+          "text": "the",
+          "start": 4.008,
+          "end": 4.058
+        },
+        {
+          "text": "instrumentals.",
+          "start": 4.083,
+          "end": 4.818
+        }
+      ]
+    },
+    "genre": {
+      "speak": "It detects the genre, and adapts the look to fit.",
+      "file": "genre.wav",
+      "duration": 2.878,
+      "words": [
+        {
+          "text": "It",
+          "start": 0.073,
+          "end": 0.148
+        },
+        {
+          "text": "detects",
+          "start": 0.198,
+          "end": 0.548
+        },
+        {
+          "text": "the",
+          "start": 0.573,
+          "end": 0.623
+        },
+        {
+          "text": "genre,",
+          "start": 0.673,
+          "end": 1.248
+        },
+        {
+          "text": "and",
+          "start": 1.373,
+          "end": 1.448
+        },
+        {
+          "text": "adapts",
+          "start": 1.473,
+          "end": 1.848
+        },
+        {
+          "text": "the",
+          "start": 1.873,
+          "end": 1.923
+        },
+        {
+          "text": "look",
+          "start": 1.973,
+          "end": 2.148
+        },
+        {
+          "text": "to",
+          "start": 2.198,
+          "end": 2.273
+        },
+        {
+          "text": "fit.",
+          "start": 2.348,
+          "end": 2.688
+        }
+      ]
+    },
+    "lyrics": {
+      "speak": "Lyrics land on time, synced to the music.",
+      "file": "lyrics.wav",
+      "duration": 2.612,
+      "words": [
+        {
+          "text": "Lyrics",
+          "start": 0.119,
+          "end": 0.419
+        },
+        {
+          "text": "land",
+          "start": 0.469,
+          "end": 0.669
+        },
+        {
+          "text": "on",
+          "start": 0.694,
+          "end": 0.794
+        },
+        {
+          "text": "time,",
+          "start": 0.844,
+          "end": 1.319
+        },
+        {
+          "text": "synced",
+          "start": 1.494,
+          "end": 1.719
+        },
+        {
+          "text": "to",
+          "start": 1.769,
+          "end": 1.819
+        },
+        {
+          "text": "the",
+          "start": 1.844,
+          "end": 1.894
+        },
+        {
+          "text": "music.",
+          "start": 1.944,
+          "end": 2.432
+        }
+      ]
+    },
+    "camera": {
+      "speak": "The camera is always moving, and unique to each song.",
+      "file": "camera.wav",
+      "duration": 3.113,
+      "words": [
+        {
+          "text": "The",
+          "start": 0.048,
+          "end": 0.123
+        },
+        {
+          "text": "camera",
+          "start": 0.173,
+          "end": 0.498
+        },
+        {
+          "text": "is",
+          "start": 0.548,
+          "end": 0.648
+        },
+        {
+          "text": "always",
+          "start": 0.698,
+          "end": 1.023
+        },
+        {
+          "text": "moving,",
+          "start": 1.073,
+          "end": 1.598
+        },
+        {
+          "text": "and",
+          "start": 1.723,
+          "end": 1.798
+        },
+        {
+          "text": "unique",
+          "start": 1.848,
+          "end": 2.173
+        },
+        {
+          "text": "to",
+          "start": 2.223,
+          "end": 2.298
+        },
+        {
+          "text": "each",
+          "start": 2.348,
+          "end": 2.523
+        },
+        {
+          "text": "song.",
+          "start": 2.573,
+          "end": 2.923
+        }
+      ]
+    },
+    "seed": {
+      "speak": "Every video gets its own seed, so no two are alike.",
+      "file": "seed.wav",
+      "duration": 3.242,
+      "words": [
+        {
+          "text": "Every",
+          "start": 0.073,
+          "end": 0.323
+        },
+        {
+          "text": "video",
+          "start": 0.373,
+          "end": 0.698
+        },
+        {
+          "text": "gets",
+          "start": 0.748,
+          "end": 0.948
+        },
+        {
+          "text": "its",
+          "start": 0.973,
+          "end": 1.048
+        },
+        {
+          "text": "own",
+          "start": 1.073,
+          "end": 1.273
+        },
+        {
+          "text": "seed,",
+          "start": 1.348,
+          "end": 1.823
+        },
+        {
+          "text": "so",
+          "start": 1.973,
+          "end": 2.073
+        },
+        {
+          "text": "no",
+          "start": 2.123,
+          "end": 2.273
+        },
+        {
+          "text": "two",
+          "start": 2.348,
+          "end": 2.498
+        },
+        {
+          "text": "are",
+          "start": 2.523,
+          "end": 2.598
+        },
+        {
+          "text": "alike.",
+          "start": 2.648,
+          "end": 3.072
+        }
+      ]
+    },
+    "choose": {
+      "speak": "Choose an experience. Change the backdrop and captions.",
+      "file": "choose.wav",
+      "duration": 3.359,
+      "words": [
+        {
+          "text": "Choose",
+          "start": 0.094,
+          "end": 0.344
+        },
+        {
+          "text": "an",
+          "start": 0.369,
+          "end": 0.419
+        },
+        {
+          "text": "experience.",
+          "start": 0.469,
+          "end": 1.369
+        },
+        {
+          "text": "Change",
+          "start": 1.494,
+          "end": 1.744
+        },
+        {
+          "text": "the",
+          "start": 1.769,
+          "end": 1.819
+        },
+        {
+          "text": "backdrop",
+          "start": 1.869,
+          "end": 2.369
+        },
+        {
+          "text": "and",
+          "start": 2.419,
+          "end": 2.494
+        },
+        {
+          "text": "captions.",
+          "start": 2.544,
+          "end": 3.179
+        }
+      ]
+    },
+    "quality": {
+      "speak": "Premium quality, rendered in real time using the GPU.",
+      "file": "quality.wav",
+      "duration": 3.797,
+      "words": [
+        {
+          "text": "Premium",
+          "start": 0.069,
+          "end": 0.494
+        },
+        {
+          "text": "quality,",
+          "start": 0.544,
+          "end": 1.194
+        },
+        {
+          "text": "rendered",
+          "start": 1.369,
+          "end": 1.719
+        },
+        {
+          "text": "in",
+          "start": 1.769,
+          "end": 1.869
+        },
+        {
+          "text": "real",
+          "start": 1.944,
+          "end": 2.169
+        },
+        {
+          "text": "time",
+          "start": 2.219,
+          "end": 2.569
+        },
+        {
+          "text": "using",
+          "start": 2.619,
+          "end": 2.869
+        },
+        {
+          "text": "the",
+          "start": 2.894,
+          "end": 2.944
+        },
+        {
+          "text": "GPU.",
+          "start": 2.994,
+          "end": 3.627
+        }
+      ]
+    },
+    "lab": {
+      "speak": "A self-serve lab, by subscription.",
+      "file": "lab.wav",
+      "duration": 2.293,
+      "words": [
+        {
+          "text": "A",
+          "start": 0.073,
+          "end": 0.123
+        },
+        {
+          "text": "self-serve",
+          "start": 0.198,
+          "end": 0.723
+        },
+        {
+          "text": "lab,",
+          "start": 0.773,
+          "end": 1.098
+        },
+        {
+          "text": "by",
+          "start": 1.198,
+          "end": 1.348
+        },
+        {
+          "text": "subscription.",
+          "start": 1.398,
+          "end": 2.133
+        }
+      ]
+    },
+    "cta": {
+      "speak": "Join early access at Live Motion Labs dot com.",
+      "file": "cta.wav",
+      "duration": 3.306,
+      "words": [
+        {
+          "text": "Join",
+          "start": 0.076,
+          "end": 0.401
+        },
+        {
+          "text": "early",
+          "start": 0.451,
+          "end": 0.701
+        },
+        {
+          "text": "access",
+          "start": 0.776,
+          "end": 1.326
+        },
+        {
+          "text": "at",
+          "start": 1.401,
+          "end": 1.451
+        },
+        {
+          "text": "Live",
+          "start": 1.501,
+          "end": 1.726
+        },
+        {
+          "text": "Motion",
+          "start": 1.776,
+          "end": 2.076
+        },
+        {
+          "text": "Labs",
+          "start": 2.126,
+          "end": 2.426
+        },
+        {
+          "text": "dot",
+          "start": 2.476,
+          "end": 2.726
+        },
+        {
+          "text": "com.",
+          "start": 2.776,
+          "end": 3.136
+        }
+      ]
+    }
+  }
+}
